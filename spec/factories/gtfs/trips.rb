@@ -1,8 +1,7 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do
-  factory :stop_time do
-    stop_id 1
-    trip_id 1
+  factory :trip, :class=>Gtfs::Trip do
+    id 1 
   end
 end

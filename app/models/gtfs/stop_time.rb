@@ -1,4 +1,4 @@
-class StopTime < ActiveRecord::Base
+class Gtfs::StopTime < ActiveRecord::Base
   belongs_to :trip
   belongs_to :stop
 end

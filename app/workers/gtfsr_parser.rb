@@ -39,8 +39,8 @@ class GtfsrParser
 
           if last_event_timestamp < current_event_timestamp
             payload = Rabl.render(result, "gtfsr/#{type}/show", :view_path=>'app/views', :format=>:json)
-            trip = Trip.find(result.vehicle.trip.trip_id)
-            stops = Trip.find(result.vehicle.trip.trip_id).stops.all if trip
+            trip = Gtfs::Trip.find(result.vehicle.trip.trip_id)
+            stops = Gtfs::Trip.find(result.vehicle.trip.trip_id).stops.all if trip
 
             $redis.pipelined do
               $redis.publish("gtfsr/#{type}_updates", payload)

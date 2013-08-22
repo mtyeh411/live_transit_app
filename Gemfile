@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
 gem 'ruby-protocol-buffers'
 gem 'sidekiq'
+gem 'whenever'
+
 gem 'rabl'
 gem 'mapbox-rails'
 
