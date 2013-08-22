@@ -1,0 +1,5 @@
+<%= content_tag "div", id: "stop", data: {id: params[:id]} do %>
+  check console
+  <div id="map"></div>
+  <%= javascript_include_tag 'stops' %>
+<% end %>

@@ -1,4 +1,8 @@
 GtfsRealtime::Application.routes.draw do
+  get 'vehicle_positions/stop/:stop_id' => 'vehicle_position#show', :constraints => {:format => :json}
+
+  resources :stops, only: :show, :constraints => {:format => :html}
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

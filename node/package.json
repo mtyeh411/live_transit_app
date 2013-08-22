@@ -1,0 +1,9 @@
+{ 
+  "name": "gtfsr_map",
+  "description": "Real-time GTFS-R for RoR",
+  "version": "0.0.0",
+  "dependencies": {
+    "socket.io": "0.9.16",
+    "redis": "0.8.4"
+  }
+}

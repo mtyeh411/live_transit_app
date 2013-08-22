@@ -1,19 +1,23 @@
 source 'https://rubygems.org'
 
 gem 'ruby-protocol-buffers'
+gem 'sidekiq'
+gem 'rabl'
+gem 'mapbox-rails'
 
 group :development, :test do
+  gem 'debugger'
+
   gem 'rspec-rails'
+  gem 'rspec-sidekiq'
+  gem 'shoulda-matchers'
+  gem 'factory_girl_rails'
+
   gem 'guard-rspec'
-  gem 'guard-spork'
   gem 'rb-fsevent', '~> 0.9.1' # for OSX
-  gem 'spork-rails', :github => 'sporkrb/spork-rails'
 end
 
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.0'
-
-# Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 
 # Use SCSS for stylesheets
@@ -51,5 +55,3 @@ end
 # Use Capistrano for deployment
 # gem 'capistrano', group: :development
 
-# Use debugger
-# gem 'debugger', group: [:development, :test]
