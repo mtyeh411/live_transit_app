@@ -1,11 +1,19 @@
 source 'https://rubygems.org'
 
+# Use for GTFS-R fetching/parsing
 gem 'ruby-protocol-buffers'
 gem 'sidekiq'
 gem 'whenever'
 
+# Use for GTFS-R viz
 gem 'rabl'
 gem 'mapbox-rails'
+
+# Use for GTFS-R loading
+gem 'foreigner', '1.2.1'
+gem 'activerecord-import'
+gem 'rubyzip'
+gem 'time_zone_ext'
 
 group :development, :test do
   gem 'debugger'

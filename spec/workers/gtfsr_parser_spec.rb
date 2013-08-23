@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe GtfsrParser do
-  let(:gtfs_feed) {  File.read(Rails.root.to_s + '/spec/samples/gtfsr_sample.pb') }
+  let(:gtfs_feed) {  File.read(Rails.root.to_s + '/spec/test_data/gtfsr_sample.pb') }
 
   describe 'manages job queue' do
     before(:each) { 

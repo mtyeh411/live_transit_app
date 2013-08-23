@@ -18,4 +18,8 @@
 # Ignore Node modules
 /node/node_modules
 
+# Ignore gtfs rake artifacts
+*.txt
+*.completed
+
 .powrc
