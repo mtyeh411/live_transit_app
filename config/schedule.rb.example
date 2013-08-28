@@ -19,11 +19,9 @@
 
 # Learn more: http://github.com/javan/whenever
 
-set :output, "#{path}/log/cron.log"
-set :environment, "development"
+set :output, 'log/cron_log.log'
 
-every 1.minute do
-  API_KEY = 'm2Hu4MYrS6qAFbB3NqXJ7ss95BGs1AB2sxzqwxBzU3GBDwunkduENArr'
-  ENDPOINT = "http://rideonrealtime.net/gtfs_realtime?auth_token=#{API_KEY}"
+every :minute do
+  ENDPOINT = "your_gtfs_realtime_endpoint"
   runner 'GtfsrParser.perform_async', :uri=>ENDPOINT
 end
