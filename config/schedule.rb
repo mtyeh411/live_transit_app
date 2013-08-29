@@ -20,10 +20,10 @@
 # Learn more: http://github.com/javan/whenever
 
 set :output, "#{path}/log/cron.log"
-set :environment, "development"
+#set :environment, "development"
 
 every 1.minute do
-  API_KEY = 'm2Hu4MYrS6qAFbB3NqXJ7ss95BGs1AB2sxzqwxBzU3GBDwunkduENArr'
-  ENDPOINT = "http://rideonrealtime.net/gtfs_realtime?auth_token=#{API_KEY}"
-  runner 'GtfsrParser.perform_async', :uri=>ENDPOINT
+  MCRO_API_KEY = 'm2Hu4MYrS6qAFbB3NqXJ7ss95BGs1AB2sxzqwxBzU3GBDwunkduENArr'
+  MCRO_ENDPOINT = "http://rideonrealtime.net/gtfs_realtime?auth_token=#{MCRO_API_KEY}"
+  runner "GtfsrParser.perform_async('#{MCRO_ENDPOINT}', 'MCRO')"
 end

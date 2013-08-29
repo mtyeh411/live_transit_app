@@ -5,7 +5,7 @@ describe GtfsrParser do
 
   describe 'manages job queue' do
     before(:each) { 
-      GtfsrParser.perform_async('http://www.a.com') 
+      GtfsrParser.perform_async('http://www.a.com', 'test_agency') 
     }
     
     it 'pushes job' do
@@ -51,9 +51,10 @@ describe GtfsrParser do
       end
 
       context 'with persisted stoptimes' do
-        let!(:stop_time) { create :stop_time, trip_id:416601 }
-        let!(:trip) { create :trip, id:416601 }
+        let!(:stop_time) { create :stop_time }
+        let!(:trip) { create :trip }
         let!(:stop) { create :stop }
+
 
         it 'stores vehicle timestamps by vehicle_position id' do
           subject.send(:publish, feed)

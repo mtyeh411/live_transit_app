@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 # Use for GTFS-R fetching/parsing
 gem 'ruby-protocol-buffers'
 gem 'sidekiq'
+gem 'sinatra', '>= 1.3.0', :require => nil # sidekiq web UI
+gem 'slim', :require => nil #sidekiq web UI
 gem 'whenever'
 
 # Use for GTFS-R viz

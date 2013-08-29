@@ -3,22 +3,34 @@ require 'net/http'
 class GtfsrParser
   include ActiveModel::Validations
   include Sidekiq::Worker
-  sidekiq_options :queue => :sidekiq
+  sidekiq_options :queue => :gtfsr_parsers, :backtrace => true
 
   attr_accessor :uri
   validates_format_of :uri, :with => URI::regexp
+  
+  def logger
+    @@logger ||= Logger.new("#{Rails.root}/log/parser.log")
+  end
 
-  def perform(uri)
+  def perform(uri, agency)
     feed = parse uri
-    publish feed
+    last_gtfsr_timestamp = get_redis_key agency, 0
+    if feed.header.timestamp > last_gtfsr_timestamp.to_i
+      publish feed, agency
+    else
+      logger.info("skipping feed from #{agency} dated #{feed.header.timestamp}: last published feed #{last_gtfsr_timestamp}")
+    end
   end
 
   private
+  def get_redis_key(key, default_value)
+    value = $redis.get key
+    value ||= default_value  
+  end
+
   def parse(uri)
     response = Net::HTTP.get_response(URI(uri))
-    if response.code == 200
-      TransitRealtime::FeedMessage.parse(response.body)
-    end
+    TransitRealtime::FeedMessage.parse(response.body) if response.code == "200"
   end
 
   def select(feed, type) 
@@ -27,30 +39,32 @@ class GtfsrParser
     end
   end
 
-  def publish(feed)
+  def publish(feed, agency)
+    $redis.set agency, feed.header.timestamp
+
     %w[vehicle].each do |type|
       results = select(feed, type)
 
       results.each do |result|
         begin
-          last_event_timestamp = $redis.get result.id
-          last_event_timestamp ||= 0
+          last_event_timestamp = get_redis_key result.id, 0
           current_event_timestamp = result.send(type).timestamp
 
-          if last_event_timestamp < current_event_timestamp
+          if last_event_timestamp.to_i < current_event_timestamp
             payload = Rabl.render(result, "gtfsr/#{type}/show", :view_path=>'app/views', :format=>:json)
-            trip = Gtfs::Trip.find(result.vehicle.trip.trip_id)
-            stops = Gtfs::Trip.find(result.vehicle.trip.trip_id).stops.all if trip
+            trip = Gtfs::Trip.find_by_trip_id(result.vehicle.trip.trip_id)
+            stops = trip.stops.all if trip
 
             $redis.pipelined do
               $redis.publish("gtfsr/#{type}_updates", payload)
               $redis.set result.id, current_event_timestamp
               stops.each do |stop|
-                $redis.publish("gtfsr/#{stop.id}/#{type}_updates", payload)
-              end
+                $redis.publish("gtfsr/#{stop.stop_code}/#{type}_updates", payload)
+              end if stops
             end
           end
-        rescue
+        rescue Exception => e
+          logger.error e.message
           next
         end
       end
