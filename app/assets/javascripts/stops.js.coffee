@@ -7,6 +7,10 @@ $(document).ready ->
   stop_coords = [stop.data('lat'), stop.data('lon')]
   map = L.mapbox.map('map', 'examples.map-uci7ul8p').setView(stop_coords, 13)
 
+  # fetch route geojson data
+  $.get "#{stop.data('id')}/routes.json", (data) ->
+    L.geoJson(data).addTo(map)
+
   # subscribe to vehicle updates
   socket.on 'gtfsr/'+stop.data('id')+'/vehicle_updates', (data) ->
     vehicle_id = data.properties.vehicle_id

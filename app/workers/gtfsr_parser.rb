@@ -51,16 +51,15 @@ class GtfsrParser
           current_event_timestamp = result.send(type).timestamp
 
           if last_event_timestamp.to_i < current_event_timestamp
-            payload = Rabl.render(result, "gtfsr/#{type}/show", :view_path=>'app/views', :format=>:json)
-            trip = Gtfs::Trip.find_by_trip_id(result.vehicle.trip.trip_id)
-            stops = trip.stops.all if trip
+            payload = Rabl.render(result, "geojson/#{type}/show", :view_path=>'app/views', :format=>:json)
+            trip = Gtfs::Trip.includes(:stops).find_by_trip_id(result.vehicle.trip.trip_id)
 
             $redis.pipelined do
               $redis.publish("gtfsr/#{type}_updates", payload)
               $redis.set result.id, current_event_timestamp
-              stops.each do |stop|
+              trip.stops.each do |stop|
                 $redis.publish("gtfsr/#{stop.stop_code}/#{type}_updates", payload)
-              end if stops
+              end
             end
           end
         rescue Exception => e

@@ -8,6 +8,12 @@ class Gtfs::Trip < ActiveRecord::Base
     where("trip_id in (?)", t_ids)
   }
 
+  def coordinates
+    trip_points = shape_points.map do |p|
+      [p.shape_pt_lon, p.shape_pt_lat]
+    end
+  end
+
   def geometry
     trip_points = shape_points.map do |p|
       [p.shape_pt_lon, p.shape_pt_lat]

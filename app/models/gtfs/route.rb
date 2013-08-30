@@ -6,6 +6,10 @@ class Gtfs::Route < ActiveRecord::Base
         where(:route_id => r_id)
   }
 
+  def coordinates
+    trips.select(:shape_id).distinct.map(&:coordinates).uniq
+  end
+
   def shapes
     # Fix this once we move to 1.9.3
     # trips.uniq(&:shape_id).map(&:geometry)

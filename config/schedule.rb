@@ -22,7 +22,7 @@
 set :output, "#{path}/log/cron.log"
 #set :environment, "development"
 
-every 1.minute do
+every 2.minutes do
   MCRO_API_KEY = 'm2Hu4MYrS6qAFbB3NqXJ7ss95BGs1AB2sxzqwxBzU3GBDwunkduENArr'
   MCRO_ENDPOINT = "http://rideonrealtime.net/gtfs_realtime?auth_token=#{MCRO_API_KEY}"
   runner "GtfsrParser.perform_async('#{MCRO_ENDPOINT}', 'MCRO')"

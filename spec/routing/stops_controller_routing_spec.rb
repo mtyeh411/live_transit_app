@@ -5,8 +5,16 @@ describe StopsController do
     let(:resource) { 'stops' }
     let(:id) { '21234' }
 
+    context 'nests geojson route resources' do
+      let(:nested_resource) { 'routes' }
+
+      it 'routes to routes index' do
+        get("/#{resource}/#{id}/#{nested_resource}").should route_to(:controller=>nested_resource, :action=>'index', :stop_id=>id)
+      end
+    end
+
     it 'routes to show stop' do
-      get("/#{resource}/#{id}").should route_to(:controller =>resource, :action =>'show', :id =>id )
+      get("/#{resource}/#{id}").should route_to(:controller=>resource, :action=>'show', :id=>id )
     end
 
     it 'only serves html' do
