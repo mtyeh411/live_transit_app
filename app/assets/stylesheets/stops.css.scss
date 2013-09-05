@@ -3,3 +3,11 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 #map { height: 500px; }
+
+.vehicle_map_text {
+  background-color: white;
+  padding: 2px 3px;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 50%;
+}

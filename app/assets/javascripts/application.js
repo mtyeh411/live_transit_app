@@ -16,3 +16,4 @@
 //= require_tree .
 //= require socket.io
 //= require mapbox.js
+//= require momentjs

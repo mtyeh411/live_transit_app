@@ -51,8 +51,10 @@ class GtfsrParser
           current_event_timestamp = result.send(type).timestamp
 
           if last_event_timestamp.to_i < current_event_timestamp
-            payload = Rabl.render(result, "geojson/#{type}/show", :view_path=>'app/views', :format=>:json)
-            trip = Gtfs::Trip.includes(:stops).find_by_trip_id(result.vehicle.trip.trip_id)
+            trip = Gtfs::Trip.includes(:stops, :route).find_by_trip_id(result.vehicle.trip.trip_id)
+
+            payload = Rabl.render(Gtfsr::VehiclePosition.new(result), "geojson/#{type}/show", :view_path=>'app/views', :format=>:json)
+            logger.debug payload
 
             $redis.pipelined do
               $redis.publish("gtfsr/#{type}_updates", payload)
