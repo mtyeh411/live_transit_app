@@ -151,16 +151,23 @@ namespace :gtfs do
       field_vals
     end
     with_timed_connection("update trips with last_stop_sequence") do |c|
+      ### SQLITE ###
       c.execute(<<-SQLCODE)
       update trips
-      set last_stop_sequence = blah.last_stop_sequence
-      from
-          (select max(stop_sequence) as last_stop_sequence, trip_id from stop_times group by trip_id) as blah
-            where blah.trip_id = trips.trip_id
+      set last_stop_sequence = (select max(stop_sequence) from stop_times where trips.trip_id=stop_times.trip_id group by trip_id)
       SQLCODE
-      c.execute(<<-SQLCODE)
-      alter table trips alter column last_stop_sequence set not null
-      SQLCODE
+
+      ### POSTGRES ###
+#      c.execute(<<-SQLCODE)
+#      update trips
+#      set last_stop_sequence = blah.last_stop_sequence
+#      from
+#          (select max(stop_sequence) as last_stop_sequence, trip_id from stop_times group by trip_id) as blah
+#            where blah.trip_id = trips.trip_id
+#      SQLCODE
+#      c.execute(<<-SQLCODE)
+#      alter table trips alter column last_stop_sequence set not null
+#      SQLCODE
     end
   end
 

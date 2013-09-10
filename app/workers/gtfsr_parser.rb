@@ -40,33 +40,40 @@ class GtfsrParser
   end
 
   def publish(feed, agency)
-    $redis.set agency, feed.header.timestamp
+    if feed.header.timestamp.to_i > $redis.get(agency).to_i
+      $redis.set agency, feed.header.timestamp
 
-    %w[vehicle].each do |type|
-      results = select(feed, type)
+      %w[vehicle].each do |type|
+        results = select(feed, type)
 
-      results.each do |result|
-        begin
-          last_event_timestamp = get_redis_key result.id, 0
-          current_event_timestamp = result.send(type).timestamp
+        results.each do |result|
+          begin
+            last_event_timestamp = get_redis_key result.id, 0
+            current_event_timestamp = result.send(type).timestamp
 
-          if last_event_timestamp.to_i < current_event_timestamp
-            trip = Gtfs::Trip.includes(:stops, :route).find_by_trip_id(result.vehicle.trip.trip_id)
+            if last_event_timestamp.to_i < current_event_timestamp
+              case type
+                when "vehicle"
+                  local_obj = Gtfsr::VehiclePosition.new result
+                when "trip_update"
+                  #local_obj = Gtfsr::VehiclePosition.new result
+              end
 
-            payload = Rabl.render(Gtfsr::VehiclePosition.new(result), "geojson/#{type}/show", :view_path=>'app/views', :format=>:json)
-            logger.debug payload
+              trip = Gtfs::Trip.includes(:stops, :route).find_by_trip_id(result.send(type).trip.trip_id)
+              payload = Rabl.render(local_obj, "geojson/#{type}/show", :view_path=>'app/views', :format=>:json)
 
-            $redis.pipelined do
-              $redis.publish("gtfsr/#{type}_updates", payload)
-              $redis.set result.id, current_event_timestamp
-              trip.stops.each do |stop|
-                $redis.publish("gtfsr/#{stop.stop_code}/#{type}_updates", payload)
+              $redis.pipelined do
+                $redis.publish("gtfsr/#{type}_updates", payload)
+                $redis.set result.id, current_event_timestamp
+                trip.stops.each do |stop|
+                  $redis.publish("gtfsr/#{stop.stop_code}/#{type}_updates", payload)
+                end
               end
             end
+          rescue Exception => e
+            logger.error e.message
+            next
           end
-        rescue Exception => e
-          logger.error e.message
-          next
         end
       end
     end

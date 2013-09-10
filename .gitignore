@@ -7,9 +7,10 @@
 # Ignore bundler config.
 /.bundle
 
-# Ignore the default SQLite database.
+# Ignore databases
 /db/*.sqlite3
 /db/*.sqlite3-journal
+*.rdb
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
@@ -20,6 +21,6 @@
 
 # Ignore gtfs rake artifacts
 *.txt
-*.completed
+*.task_completed
 
 .powrc

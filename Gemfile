@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+gem 'foreman'
+
 # Use for GTFS-R fetching/parsing
 gem 'ruby-protocol-buffers'
 gem 'sidekiq'
