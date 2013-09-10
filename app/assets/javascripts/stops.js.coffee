@@ -79,22 +79,3 @@ $(document).ready ->
     vehicle_markers = _.difference(vehicle_markers, old_vehicles)
 
 
-    ###
-    vehicle_markers[vehicle_id].clearLayers() if vehicle_markers[vehicle_id]
-    vehicle_markers[vehicle_id] = L.geoJson(data, pointToLayer: (feature, coords) ->
-      route = feature.properties.route
-
-      vehicle_map_icon = L.divIcon(
-        iconSize: null,
-        html:"<span class='vehicle_map_text' style='border-color:#{route_colors[route]}'>#{route}</span>",
-        className:"vehicle_map_icon"
-      )
-
-      vehicle_popup = "<b>to #{feature.properties.trip_headsign}</b> <br/> <small>vehicle #{feature.properties.vehicle_id} updated at #{moment.unix(feature.properties.timestamp).format("LT")}</small>"
-
-      vehicle_markers[vehicle_id] = L.marker(coords, {icon: vehicle_map_icon}).bindPopup(vehicle_popup).addTo(map)
-
-    ).addTo(map)
-    ###
-
-
