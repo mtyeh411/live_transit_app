@@ -24,3 +24,10 @@
 *.task_completed
 
 .powrc
+
+# Ignore custom configs
+config/vagrant/*.yml
+config/schedule.rb
+
+# Ignore vagrant machines
+.vagrant

@@ -1,8 +1,9 @@
-$as_vagrant   = 'sudo -u vagrant -H bash -l -c'
-$home         = '/home/vagrant'
 $ruby_version = '2.0.0-p247'
-$app          = 'gtfs_realtime_viz'
-$with_gemset  = "${home}/.rvm/bin/rvm ${ruby_version}@${app} do"
+$project      = 'gtfs_realtime_viz'
+
+$bash         = 'sudo -H bash -l -c'
+$rvm          = '/usr/local/rvm'
+$with_gemset  = "${rvm}/bin/rvm ${ruby_version}@${project} do"
 
 Exec {
   path => ['/usr/sbin', '/usr/bin', '/sbin', '/bin']
@@ -13,35 +14,17 @@ stage { 'preinstall':
   before =>  Stage['main']
 }
 
-class apt_get_update {
+class pkg_manager_update {
   exec { 'apt-get -y update':
-    unless =>  "test -e ${home}/.rvm"
+    unless =>  "test -e ${rvm}"
   }
 }
 
-class { 'apt_get_update':
+class { 'pkg_manager_update':
   stage => preinstall
 }
 
-# --- Databases ---
-package { ['sqlite3', 'libsqlite3-dev']:
-  ensure => installed;
-}
-
 # --- Dependency Packages ---
-package { 'curl':
-  ensure => installed
-}
-package { 'build-essential':
-  ensure => installed
-}
-package { 'git-core': 
-  ensure => installed
-}
-package { ['libxml2', 'libxml2-dev', 'libxslt-dev']:
-  ensure => installed
-}
-
 package { 'nodejs':
   ensure => installed
 }
@@ -50,53 +33,63 @@ package { 'redis-server':
 }
 
 # --- Ruby ---
-exec { 'install_rvm':
-  command => "${as_vagrant} 'curl -L https://get.rvm.io | bash -s stable'",
-  creates => "${home}/.rvm/bin/rvm",
-  require => Package['curl']
+include rvm
+
+rvm_system_ruby { "ruby-${ruby_version}":
+  ensure      => 'present',
+  default_use => true,
 }
 
-exec { 'install_ruby':
-  command => "${as_vagrant} '${home}/.rvm/bin/rvm install ${ruby_version} --autolibs=enabled && rvm alias create default ${ruby_version}'",
-  creates => "${home}/.rvm/bin/ruby",
-  require => Exec['install_rvm']
+rvm_gemset { "ruby-${ruby_version}@${project}":
+  ensure  => present,
+  require => Rvm_system_ruby["ruby-${ruby_version}"],
 }
 
-exec { 'install_gemset':
-  command => "${as_vagrant} 'rvm use ${ruby_version}@${app} --create'",
-  creates => "${home}/.rvm/gems/ruby-${ruby_version}@${app}/",
-  require => Exec['install_ruby']
+rvm_gem { "ruby-${ruby_version}@${project}/bundler":
+  ensure  => latest,
+  require => Rvm_gemset["ruby-${ruby_version}@${project}"]
 }
 
-exec { 'install_bundler':
-  command => "${as_vagrant} 'gem install bundler --no-rdoc --no-ri'",
-  creates => "${home}/.rvm/bin/bundle",
-  require => Exec['install_gemset']
+include stdlib
+file_line { 'trust_all_rvmrcs':
+  path    => "/etc/rvmrc",
+  line    => "rvm_trust_rvmrcs_flag=1",
+  match   => "^rvm_trust_rvmrcs_flag=",
+  require => File['/etc/rvmrc']
+}
+file { '/etc/rvmrc':
+  ensure  => file
 }
 
+# --- Application configs and installs ---
 exec { "install_gems":
  command  => "${with_gemset} bundle install",
  cwd      => '/vagrant',
- require  => Exec['install_bundler']
+ require  => Rvm_gem["ruby-${ruby_version}@${project}/bundler"]
 }
 
-# --- Application service monitoring ---
 exec { "update_cron":
-  command   => "${as_vagrant} '${with_gemset} bundle exec whenever -i'",
+  command   => "${bash} '${with_gemset} bundle exec whenever -i'",
   cwd       => '/vagrant',
   logoutput => true,
   require   => Exec['install_gems']
 }
 
 exec { "export_foreman":
-  command  => "${with_gemset} rvmsudo foreman export upstart /etc/init -a ${app} -u vagrant",
+  command  => "${bash} '${with_gemset} rvmsudo foreman export upstart /etc/init -a ${project} -u root'",
   cwd      => '/vagrant',
-  creates  => "/etc/init/${app}.conf",
+  creates  => "/etc/init/${project}.conf",
   require  => Exec['update_cron']
 }
 
-service { "${app}":
+# --- Application service monitoring ---
+file { "/etc/init/${project}.conf":
+  ensure  => file,
+  require => Exec['export_foreman'],
+  notify  => Service["${project}"]
+}
+
+service { "${project}":
   ensure    => running,
-  provider  => 'upstart',
-  require   => Exec['export_foreman']
+  provider  => 'upstart'
 }

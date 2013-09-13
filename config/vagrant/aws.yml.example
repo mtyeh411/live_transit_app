@@ -1,0 +1,30 @@
+#
+# For a list of Vagrant AWS settings see:
+# http://github.com/mitchellh/vagrant-aws
+#
+
+aws:
+  region: 'us-east-1' # should not contain region letter suffix
+  ami: 'ami-7bbdf312' # Ubuntu Precise x86_64 Daily Build
+  instance_type: 't1.micro'
+  tags: 
+    Name: 'gtfsr'
+
+  # 
+  # Use security group name for EC2-Classic
+  # Use security group ID for EC2-VPC
+  # https://github.com/mitchellh/vagrant-aws/issues/118
+  #
+  security_groups: [
+    your_security_group_1,
+    your_security_group_2
+  ]
+
+  access_key_id: your_key_id
+  secret_access_key: your_secret_access_key
+  keypair_name: your_keypair_name
+
+  override:
+    ssh:
+      username: 'ubuntu'
+      private_key_path: path_to_your_private_key

@@ -20,6 +20,7 @@ gem 'rubyzip'
 gem 'time_zone_ext'
 
 group :development, :test do
+  gem 'puppet'
   gem 'debugger'
 
   gem 'rspec-rails'

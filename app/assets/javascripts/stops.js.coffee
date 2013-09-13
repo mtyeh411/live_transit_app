@@ -1,5 +1,5 @@
 $(document).ready ->
-  socket = io.connect 'http://localhost:5001'
+  socket = io.connect "http://#{location.hostname}:5001"
 
   stop = $('#stop')
   vehicle_markers = []
