@@ -5,11 +5,33 @@ describe StopsController do
     let(:resource) { 'stops' }
     let(:id) { '21234' }
 
+    context 'nests schedule per route' do
+      let(:service_id) { 'abc123' }
+      let(:url) {"/#{resource}/#{id}/schedules/#{service_id}"}
+
+      it 'routes to stop schedule' do
+        get(url).should route_to(:controller=>resource, :action=>'schedule', :stop_id=>id, :service_id=>service_id)
+      end
+
+      it 'only serves json' do
+        get("/#{url}.html").should_not be_routable
+        get("/#{url}.xml").should_not be_routable
+        get("/#{url}.json").should be_routable
+      end
+    end
+
     context 'nests geojson route resources' do
       let(:nested_resource) { 'routes' }
+      let(:url) {"/#{resource}/#{id}/#{nested_resource}"}
 
       it 'routes to routes index' do
-        get("/#{resource}/#{id}/#{nested_resource}").should route_to(:controller=>nested_resource, :action=>'index', :stop_id=>id)
+        get(url).should route_to(:controller=>nested_resource, :action=>'index', :stop_id=>id)
+      end
+
+      it 'only serves json' do
+        get("/#{url}.html").should_not be_routable
+        get("/#{url}.xml").should_not be_routable
+        get("/#{url}.json").should be_routable
       end
     end
 

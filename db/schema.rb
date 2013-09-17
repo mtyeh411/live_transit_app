@@ -56,13 +56,6 @@ ActiveRecord::Schema.define(version: 20130315180000) do
   add_index "shape_points", ["shape_pt_lon"], name: "index_shape_points_on_shape_pt_lon"
   add_index "shape_points", ["shape_pt_sequence"], name: "index_shape_points_on_shape_pt_sequence"
 
-  create_table "stop_time_events", id: false, force: true do |t|
-    t.integer "stop_time_id",   null: false
-    t.string  "stop_id",        null: false
-    t.integer "arrival_time"
-    t.integer "departure_time"
-  end
-
   create_table "stop_time_services", id: false, force: true do |t|
     t.integer "stop_time_id",               null: false
     t.string  "stop_id",                    null: false

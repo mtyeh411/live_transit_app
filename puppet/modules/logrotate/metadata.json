@@ -1,0 +1,38 @@
+{
+  "name": "example42-logrotate",
+  "version": "2.0.12",
+  "source": "https://github.com/example42/puppet-logrotate",
+  "author": "Alessandro Franceschi",
+  "license": "Apache2",
+  "summary": "Puppet module for logrotate",
+  "description": "This module installs and manages logrotate. Check README for details.",
+  "project_page": "http://www.example42.com",
+  "dependencies": [
+    {
+      "name": "example42/puppi",
+      "version_requirement": ">= 2.0.0"
+    }
+  ],
+  "types": [
+
+  ],
+  "checksums": {
+    "Modulefile": "39bfcb6171ebb31056b029a24b3c2c64",
+    "README.md": "f8854b6e6653d151466d9e9c6cfaca3d",
+    "Rakefile": "e90d68823ff237c89224eb139f8926ad",
+    "manifests/conf.pp": "8bc287cfbfd034f45fafefbb748e338d",
+    "manifests/file.pp": "2e287689aaa23100e8b174767ffc9504",
+    "manifests/init.pp": "29d86cb59ef6ddf4c0d6720360f7f789",
+    "manifests/params.pp": "b53397ba02d4473d41e4a2c05664e294",
+    "manifests/rule.pp": "cd619b9468e4b58d194f57d46cf73bb4",
+    "manifests/spec.pp": "a81ceb6b4fad625fd058703ac41130e8",
+    "spec/classes/minimal42_spec.rb": "45daf157571a23101feb9ef2df6422a4",
+    "spec/spec_helper.rb": "0db89c9a486df193c0e40095422e19dc",
+    "templates/conf.erb": "b8619a334a873f3921d855f9998ce771",
+    "templates/rule.erb": "2b07e21187ef88c96564804c250d5773",
+    "templates/spec.erb": "95554a191230174b3ba5942f8d8d5b1e",
+    "tests/absent.pp": "f6f450f6953e00a11fd823e2b63a1605",
+    "tests/disable.pp": "5271b06525a49a548eb00d4b2821eb2d",
+    "tests/init.pp": "4cafd7675eef9d1c722899d85db037af"
+  }
+}

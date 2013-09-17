@@ -9,22 +9,10 @@ Exec {
   path => ['/usr/sbin', '/usr/bin', '/sbin', '/bin']
 }
 
-# --- Preinstall stage ---
-stage { 'preinstall':
-  before =>  Stage['main']
-}
+# --- Databases ---
+include postgresql::server
 
-class pkg_manager_update {
-  exec { 'apt-get -y update':
-    unless =>  "test -e ${rvm}"
-  }
-}
-
-class { 'pkg_manager_update':
-  stage => preinstall
-}
-
-# --- Dependency Packages ---
+# --- Packages ---
 package { 'nodejs':
   ensure => installed
 }
@@ -53,8 +41,8 @@ rvm_gem { "ruby-${ruby_version}@${project}/bundler":
 include stdlib
 file_line { 'trust_all_rvmrcs':
   path    => "/etc/rvmrc",
-  line    => "rvm_trust_rvmrcs_flag=1",
-  match   => "^rvm_trust_rvmrcs_flag=",
+  line    => 'rvm_trust_rvmrcs_flag=1',
+  match   => '^rvm_trust_rvmrcs_flag=',
   require => File['/etc/rvmrc']
 }
 file { '/etc/rvmrc':
@@ -62,20 +50,20 @@ file { '/etc/rvmrc':
 }
 
 # --- Application configs and installs ---
-exec { "install_gems":
+exec { 'install_gems':
  command  => "${with_gemset} bundle install",
  cwd      => '/vagrant',
  require  => Rvm_gem["ruby-${ruby_version}@${project}/bundler"]
 }
 
-exec { "update_cron":
+exec { 'update_cron':
   command   => "${bash} '${with_gemset} bundle exec whenever -i'",
   cwd       => '/vagrant',
   logoutput => true,
   require   => Exec['install_gems']
 }
 
-exec { "export_foreman":
+exec { 'export_foreman':
   command  => "${bash} '${with_gemset} rvmsudo foreman export upstart /etc/init -a ${project} -u root'",
   cwd      => '/vagrant',
   creates  => "/etc/init/${project}.conf",
@@ -89,7 +77,30 @@ file { "/etc/init/${project}.conf":
   notify  => Service["${project}"]
 }
 
-service { "${project}":
+service { $project:
   ensure    => running,
   provider  => 'upstart'
+}
+
+# --- Logfile management ---
+class { 'logrotate': }
+
+logrotate::rule { $project:
+  path          => "/var/log/${project}/*.log",
+  rotate        => 3,
+  size          => '100k',
+  create        => true,
+  create_mode   => 0600,
+  create_owner  => root,
+  create_group  => root,
+  shred         => true,
+  compress      => true,
+  ifempty       => false,
+}
+
+cron { 'logrotate':
+  ensure  => absent,
+  command => '/usr/sbin/logrotate',
+  user    => root,
+  minute  => '*/5',
 }

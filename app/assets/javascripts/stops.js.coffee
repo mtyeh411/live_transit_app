@@ -78,4 +78,8 @@ $(document).ready ->
     )
     vehicle_markers = _.difference(vehicle_markers, old_vehicles)
 
+  # subscribe to trip day updates
+  #socket.on 'trip_day_update', (data) ->
+
+
 

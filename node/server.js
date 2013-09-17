@@ -1,6 +1,9 @@
 var io = require('socket.io').listen(5001),
     redis = require('redis').createClient();
 
+// quiet down, socket.io
+io.set('log level', 1);
+
 // subscribe to redis
 redis.psubscribe('gtfsr/*');
 

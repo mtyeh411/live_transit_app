@@ -6,4 +6,8 @@ class Gtfs::StopTime < ActiveRecord::Base
 
   delegate :route, :to => :trip
   delegate :block_id, :to => :trip
+
+  scope :by_service_id, -> (service_id) {
+    joins(:trip).where('trips.service_id = ?', service_id) 
+  }
 end

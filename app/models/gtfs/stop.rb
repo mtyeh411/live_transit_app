@@ -1,7 +1,7 @@
 class Gtfs::Stop < ActiveRecord::Base
   has_many :stop_times, :foreign_key => "stop_id", :primary_key => "stop_id"
   has_many :trips, :through => :stop_times
-  has_many :routes, -> { distinct}, :through => :trips
+  has_many :routes, -> {distinct}, :through => :trips
 
   def geometry
     {
@@ -12,5 +12,10 @@ class Gtfs::Stop < ActiveRecord::Base
 
   def to_param
     self.stop_code
+  end
+
+  def times_by_service service_id
+    Gtfs::Stop.joins('INNER JOIN stop_time_services ON stop_time_services.stop_id=stops.stop_id').
+    where('stop_time_services.stop_id = ? AND stop_time_services.service_id = ?', self.stop_id, service_id) 
   end
 end

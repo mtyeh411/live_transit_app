@@ -19,10 +19,14 @@ gem 'activerecord-import'
 gem 'rubyzip'
 gem 'time_zone_ext'
 
-group :development, :test do
+gem 'haml'
+
+group :development do
   gem 'puppet'
   gem 'debugger'
+end
 
+group :test do
   gem 'rspec-rails'
   gem 'rspec-sidekiq'
   gem 'shoulda-matchers'
@@ -30,6 +34,8 @@ group :development, :test do
 
   gem 'guard-rspec'
   gem 'rb-fsevent', '~> 0.9.1' # for OSX
+
+  # gem 'fakeredis', :require => 'fakeredis/rspec' # pubsub not supported
 end
 
 gem 'rails', '4.0.0'
