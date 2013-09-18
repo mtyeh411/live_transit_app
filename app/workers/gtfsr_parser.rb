@@ -9,7 +9,7 @@ class GtfsrParser
   validates_format_of :uri, :with => URI::regexp
   
   def logger
-    @@logger ||= Logger.new("#{Rails.root}/log/parser.log")
+    @@logger ||= Logger.new("#{Rails.root}/log/gtfsr_parser.log")
   end
 
   def perform(uri, agency)

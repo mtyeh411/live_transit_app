@@ -11,6 +11,7 @@ Vagrant.configure('2') do |config|
     local.vm.hostname = 'gtfsr'
     local.vm.network :forwarded_port, guest: 3000, host: 3000
     local.vm.network :forwarded_port, guest: 5001, host: 5001 
+    local.vm.network :forwarded_port, guest: 6379, host: 6379
   end
 
   if File.exists? 'config/vagrant/aws.yml'

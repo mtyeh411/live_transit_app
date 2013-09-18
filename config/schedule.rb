@@ -27,3 +27,7 @@ every 1.minutes do
   MCRO_ENDPOINT = "http://rideonrealtime.net/gtfs_realtime?auth_token=#{MCRO_API_KEY}"
   runner "GtfsrParser.perform_async('#{MCRO_ENDPOINT}', 'MCRO')"
 end
+
+every 1.day, :at=>'12 am' do
+  runner "TripDayPublisher.perform"
+end

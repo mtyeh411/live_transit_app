@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe StopsController do
  let!(:stop) { create(:stop) } 
-
   context '#show' do
     before(:each) { get :show, {:id => stop.stop_code}}
 

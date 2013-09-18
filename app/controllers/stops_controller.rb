@@ -1,4 +1,6 @@
 class StopsController < ApplicationController
+  before_action :get_trip_day
+
   def show
     @stop = Gtfs::Stop.find_by_stop_code params[:id]  
 
@@ -14,5 +16,12 @@ class StopsController < ApplicationController
     respond_to do |format|
       format.json { render json: @times }
     end
+  end
+
+  private
+  def get_trip_day
+    $redis.set 'action', action_name
+    TripDayPublisher.perform unless $redis.get 'trip_day'
+    @trip_day = $redis.get 'trip_day'
   end
 end

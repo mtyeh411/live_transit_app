@@ -1,9 +1,21 @@
 $(document).ready ->
-  socket = io.connect "http://#{location.hostname}:5001"
+  get_schedule = (service_id) ->
+    $.get "#{stop.data('id')}/schedules/#{service_id}", (data) ->
+      console.log data
 
+  remove_old_vehicle_markers = (expiry) ->
+    oldest_update_to_keep = moment().subtract(expiry, 'minutes').unix()
+    old_vehicles = _.filter(vehicle_markers, (vehicle) ->
+      vehicle.timestamp < oldest_update_to_keep
+    )
+    _.each(old_vehicles, (vehicle) ->
+      vehicle.marker.clearLayers()
+    )
+    vehicle_markers = _.difference(vehicle_markers, old_vehicles)
+
+  # variables
   stop = $('#stop')
   vehicle_markers = []
-
   route_colors = {}
   colors = ["red", "green", "blue", "yellow", "cyan", "magenta"]
 
@@ -38,10 +50,20 @@ $(document).ready ->
       opacity: 0.2
     ).addTo(map)
 
-  # subscribe to vehicle updates
+  # remove old vehicle markers every minute
+  setInterval ->
+    remove_old_vehicle_markers(5)
+  , 60*1000
+
+  # show today's schedule
+  service_id = $('#schedule').data('init-service-id')
+  console.log service_id
+  get_schedule service_id
+
+  # socket.io subscriptions
+  socket = io.connect "http://#{location.hostname}:5001"
   socket.on 'gtfsr/'+stop.data('id')+'/vehicle_updates', (data) ->
     vehicle_id = data.properties.vehicle_id
-    oldest_update_to_keep = moment().subtract(5, 'minutes').unix()
 
     # update/insert marker in vehicle_markers
     vehicle = _.findWhere(vehicle_markers, {vehicle_id: vehicle_id}) || {vehicle_id: vehicle_id}
@@ -69,17 +91,7 @@ $(document).ready ->
     else
       vehicle_markers.push vehicle
 
-    # remove old vehicle markers
-    old_vehicles = _.filter(vehicle_markers, (vehicle) ->
-      vehicle.timestamp < oldest_update_to_keep
-    )
-    _.each(old_vehicles, (vehicle) ->
-      vehicle.marker.clearLayers()
-    )
-    vehicle_markers = _.difference(vehicle_markers, old_vehicles)
-
   # subscribe to trip day updates
-  #socket.on 'trip_day_update', (data) ->
-
-
-
+  socket.on 'gtfsr/trip_day_update', (service_id) ->
+    console.log service_id
+    get_schedule service_id
