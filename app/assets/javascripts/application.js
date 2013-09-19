@@ -12,11 +12,13 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require twitter/bootstrap
 //= require turbolinks
 //= require socket.io
 //= require mapbox.js
 //= require momentjs
 //= require underscorejs 
 //= require handlebars.runtime
+//= require iscrolljs
 //= require_tree .
 //= require_tree ./templates

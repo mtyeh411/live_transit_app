@@ -3,6 +3,6 @@
   #map
 
   #schedule{ :"data-service-id" => "#{@trip_day}", :"data-day" => "#{Date.current.in_time_zone.to_i}" }
-    = @trip_day
+    Loading schedule for #{Date.current.strftime "%m/%d/%Y"}...
 
   = javascript_include_tag 'stops'

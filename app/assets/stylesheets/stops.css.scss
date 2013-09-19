@@ -11,3 +11,63 @@
   border-style: solid;
   border-radius: 50%;
 }
+
+$scroller_height: 60px;
+
+.route {
+  height: $scroller_height;
+  line-height: $scroller_height;
+}
+
+.scroller-wrapper {
+	position: relative;
+	z-index: 1;
+	height: $scroller_height;
+	width: 100%;
+	background: #ccc;
+	overflow: hidden;
+	-ms-touch-action: none;
+}
+
+.scroller {
+	position: absolute;
+	z-index: 1;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	width: 2400px;
+	height: $scroller_height;
+	-webkit-transform: translateZ(0);
+	-moz-transform: translateZ(0);
+	-ms-transform: translateZ(0);
+	-o-transform: translateZ(0);
+	transform: translateZ(0);
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	-webkit-text-size-adjust: none;
+	-moz-text-size-adjust: none;
+	-ms-text-size-adjust: none;
+	-o-text-size-adjust: none;
+	text-size-adjust: none;
+}
+
+.scroller ul {
+	list-style: none;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+.scroller li {
+	width: 120px;
+	height: $scroller_height;
+	float: left;
+	line-height: $scroller_height;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	background-color: #fafafa;
+	font-size: 14px;
+	overflow: hidden;
+	text-align: center;
+}

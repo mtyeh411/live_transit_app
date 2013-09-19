@@ -41,8 +41,12 @@ end
 gem 'rails', '4.0.0'
 gem 'sqlite3'
 
-#gem 'hogan_assets'
 gem 'handlebars_assets'
+
+# Use Bootstrap with Less support
+gem 'therubyracer', :platforms => :ruby
+gem 'less-rails'
+gem 'twitter-bootstrap-rails'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'

@@ -1,8 +1,24 @@
 {{#routes}}
-  Route {{this.[0]}}
-  {{#each this.[1]}}
-    <div class="time" id="{{id}}" data-trip-id="{{trip_id}}">
-      {{display_time arrival_time}}
-    </div>
-  {{/each}}
+
+  <div class="route row" id="route-{{this.[0]}}">
+    <span class="span1">Route {{this.[0]}}</span>
+
+    <span class="span3">This is a placeholder</span>
+
+    <span class="span8">
+      <div class="scroller-wrapper">
+        <div class="scroller">
+          <ul class="times unstyled inline">
+            {{#each this.[1]}}
+              <li class="time" data-index="{{@index}}" data-id="{{id}}" data-trip-id="{{trip_id}}">
+                {{display_time arrival_time}}
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    </span>
+
+  </div>
+
 {{/routes}}
