@@ -5,9 +5,10 @@ $(document).ready ->
   service_id = $('#schedule').data('service-id')
 
   vehicle_markers = []
-  scrollers = []
+  scrollers = {}
   route_colors = {}
   colors = ["red", "green", "blue", "yellow", "cyan", "magenta"]
+  time_width = 131 # default
 
   socket = io.connect "http://#{location.hostname}:5001"
   map = L.mapbox.map('map', 'mtyeh411.map-g1l1wfpm').setView(stop_coords, 13)
@@ -20,6 +21,20 @@ $(document).ready ->
   socket.on 'gtfsr/trip_day_update', (service_id) ->
     $('#schedule').data('day', moment().hours(0).minutes(0).seconds(0))
     get_schedule service_id
+
+  # scroll timetable for route to time that are nearest to timestamp
+  scroll_to_nearest_time = (route, timestamp) ->
+    selector = "##{route} .scroller li"
+
+    index = ($(selector).filter (index) ->
+      $(this).data('timestamp') > timestamp
+    ).first().data('index') #|| $(selector).length
+
+    scrollers[route].scrollTo index*time_width*-1, 0, '2ms'
+    
+  scroll_to_nearest_times = (timestamp) ->
+    _.each $('.route'), (e) ->
+      scroll_to_nearest_time e.id, timestamp
 
   # get schedule
   get_schedule = (service_id) ->
@@ -36,7 +51,7 @@ $(document).ready ->
       timetable = HandlebarsTemplates['stops/stop_times'] context
       $('#schedule').html(timetable)
       
-      # WORKING ON SCROLLERS
+      # set up scrollers
       _.each $('.route'), (e) ->
         selector = "##{e.id} .scroller-wrapper"
         scroller = new IScroll selector, {
@@ -44,9 +59,20 @@ $(document).ready ->
           scrollX: true,
           scrollY: false,
           keyBinding: true,
-          #snap: true,
-          #snapSpeed: 400
+          snap: $("##{e.id} .scroller li"),
+          snapSpeed: 1000,
+          click: true
         }
+        scrollers[e.id] = scroller
+
+      window.scrollers = _.clone scrollers
+
+      # TODO
+      $('.time').on 'hover', (e) ->
+        content = "towards <b>#{$(e.target).data('trip-headsign')}</b>"
+
+      time_width = $('.time').outerWidth()
+      scroll_to_nearest_times moment().unix()
 
   # remove old vehicle markers
   remove_old_vehicle_markers = (expiry) ->

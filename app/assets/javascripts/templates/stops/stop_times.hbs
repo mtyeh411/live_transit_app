@@ -10,10 +10,11 @@
         <div class="scroller">
           <ul class="times unstyled inline">
             {{#each this.[1]}}
-              <li class="time" data-index="{{@index}}" data-id="{{id}}" data-trip-id="{{trip_id}}">
+              <li class="time" data-index="{{@index}}" data-timestamp="{{arrival_time}}" data-trip-headsign="{{trip_headsign}}">
                 {{display_time arrival_time}}
               </li>
             {{/each}}
+            <li>No more times scheduled for today.</li>
           </ul>
         </div>
       </div>
