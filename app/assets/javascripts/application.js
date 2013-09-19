@@ -13,8 +13,10 @@
 //= require jquery
 //= require jquery_ujs
 //= require turbolinks
-//= require_tree .
 //= require socket.io
 //= require mapbox.js
 //= require momentjs
 //= require underscorejs 
+//= require handlebars.runtime
+//= require_tree .
+//= require_tree ./templates

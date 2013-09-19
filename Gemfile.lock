@@ -78,6 +78,10 @@ GEM
       rspec (~> 2.13)
     haml (4.0.3)
       tilt
+    handlebars_assets (0.14.1)
+      execjs (>= 1.2.9)
+      sprockets (>= 2.0.3)
+      tilt
     hiera (1.2.1)
       json_pure
     hike (1.2.3)
@@ -232,6 +236,7 @@ DEPENDENCIES
   foreman
   guard-rspec
   haml
+  handlebars_assets
   jbuilder (~> 1.2)
   jquery-rails
   mapbox-rails

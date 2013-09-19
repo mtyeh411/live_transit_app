@@ -9,12 +9,12 @@ class StopsController < ApplicationController
     end
   end
 
-  def schedule
+  def show_times 
     @stop = Gtfs::Stop.find_by_stop_code params[:stop_id]  
     @times = @stop.stop_times.by_service_id params[:service_id]
 
     respond_to do |format|
-      format.json { render json: @times }
+      format.json { render :show_times }
     end
   end
 

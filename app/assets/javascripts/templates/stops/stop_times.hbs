@@ -1,0 +1,8 @@
+{{#routes}}
+  Route {{this.[0]}}
+  {{#each this.[1]}}
+    <div class="time" id="{{id}}" data-trip-id="{{trip_id}}">
+      {{display_time arrival_time}}
+    </div>
+  {{/each}}
+{{/routes}}

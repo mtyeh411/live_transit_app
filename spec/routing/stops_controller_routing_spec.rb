@@ -10,7 +10,7 @@ describe StopsController do
       let(:url) {"/#{resource}/#{id}/schedules/#{service_id}"}
 
       it 'routes to stop schedule' do
-        get(url).should route_to(:controller=>resource, :action=>'schedule', :stop_id=>id, :service_id=>service_id)
+        get(url).should route_to(:controller=>resource, :action=>'show_times', :stop_id=>id, :service_id=>service_id)
       end
 
       it 'only serves json' do

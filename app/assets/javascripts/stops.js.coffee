@@ -1,7 +1,30 @@
 $(document).ready ->
+  # variables
+  stop = $('#stop')
+  vehicle_markers = []
+  route_colors = {}
+  colors = ["red", "green", "blue", "yellow", "cyan", "magenta"]
+
   get_schedule = (service_id) ->
+    console.log service_id
     $.get "#{stop.data('id')}/schedules/#{service_id}", (data) ->
-      console.log data
+      window.times = data
+
+      sorted_times = _.groupBy _.sortBy(data, (time) ->
+        time.arrival_time
+      ), (time) -> time.route_short_name
+
+      window.sorted_times = sorted_times
+
+      context = {
+        day: $('#schedule').data('day'),
+        routes: _.pairs sorted_times
+      }
+
+      window.context = context
+
+      timetable = HandlebarsTemplates['stops/stop_times'] context
+      $('#schedule').html(timetable)
 
   remove_old_vehicle_markers = (expiry) ->
     oldest_update_to_keep = moment().subtract(expiry, 'minutes').unix()
@@ -12,12 +35,6 @@ $(document).ready ->
       vehicle.marker.clearLayers()
     )
     vehicle_markers = _.difference(vehicle_markers, old_vehicles)
-
-  # variables
-  stop = $('#stop')
-  vehicle_markers = []
-  route_colors = {}
-  colors = ["red", "green", "blue", "yellow", "cyan", "magenta"]
 
   # setup map
   stop_coords = [stop.data('lat'), stop.data('lon')]
@@ -56,8 +73,7 @@ $(document).ready ->
   , 60*1000
 
   # show today's schedule
-  service_id = $('#schedule').data('init-service-id')
-  console.log service_id
+  service_id = $('#schedule').data('service-id')
   get_schedule service_id
 
   # socket.io subscriptions
@@ -93,5 +109,5 @@ $(document).ready ->
 
   # subscribe to trip day updates
   socket.on 'gtfsr/trip_day_update', (service_id) ->
-    console.log service_id
+    $('#schedule').data('day', moment().hours(0).minutes(0).seconds(0))
     get_schedule service_id
