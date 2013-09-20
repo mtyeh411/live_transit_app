@@ -11,7 +11,7 @@ $(document).ready ->
   time_width = 131 # default
 
   socket = io.connect "http://#{location.hostname}:5001"
-  map = L.mapbox.map('map', 'mtyeh411.map-g1l1wfpm').setView(stop_coords, 13)
+  map = L.mapbox.map('map', 'mtyeh411.map-g1l1wfpm').setView(stop_coords, 16)
 
   # subscribe to vehicle updates
   socket.on 'gtfsr/'+stop.data('id')+'/vehicle_updates', (data) ->
@@ -50,6 +50,9 @@ $(document).ready ->
 
       timetable = HandlebarsTemplates['stops/stop_times'] context
       $('#schedule').html(timetable)
+      time_width = $('.time').outerWidth()
+      _.each $('.scroller'), (el) ->
+        $(el).width ($(el).find('li').length+5)*time_width
       
       # set up scrollers
       _.each $('.route'), (e) ->
@@ -71,7 +74,6 @@ $(document).ready ->
       $('.time').on 'hover', (e) ->
         content = "towards <b>#{$(e.target).data('trip-headsign')}</b>"
 
-      time_width = $('.time').outerWidth()
       scroll_to_nearest_times moment().unix()
 
   # remove old vehicle markers
@@ -141,11 +143,14 @@ $(document).ready ->
         opacity: 0.2
       ).addTo(map)
 
-  setup_map()
-  get_schedule service_id
+  # timed methods
   setInterval ->
     remove_old_vehicle_markers(5)
+    scroll_to_nearest_times moment().unix()
   , 60*1000
+
+  setup_map()
+  get_schedule service_id
   
   document.addEventListener 'touchmove', (e) ->
     e.preventDefault()

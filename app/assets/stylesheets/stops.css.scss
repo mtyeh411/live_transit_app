@@ -12,6 +12,8 @@
   border-radius: 50%;
 }
 
+.no-time { padding-left: 5px; }
+
 $scroller_height: 60px;
 
 .route {
@@ -27,13 +29,14 @@ $scroller_height: 60px;
 	background: #ccc;
 	overflow: hidden;
 	-ms-touch-action: none;
+  overflow:hidden;
 }
 
 .scroller {
 	position: absolute;
 	z-index: 1;
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
-	width: 2400px;
+	min-width: 2400px;
 	height: $scroller_height;
 	-webkit-transform: translateZ(0);
 	-moz-transform: translateZ(0);
