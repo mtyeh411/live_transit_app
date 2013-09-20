@@ -9,7 +9,8 @@ node(:properties) do |v|
     :trip_id => v.trip_id,
     :vehicle_id => v.vehicle_id,
     :route => v.trip.route.route_short_name,
-    :trip_headsign => v.trip.trip_headsign
+    :trip_headsign => v.trip.trip_headsign,
+    :bearing => v.bearing
   }
 end
 

@@ -14,13 +14,20 @@ $(document).ready ->
   map = L.mapbox.map('map', 'mtyeh411.map-g1l1wfpm').setView(stop_coords, 16)
 
   # subscribe to vehicle updates
-  socket.on 'gtfsr/'+stop.data('id')+'/vehicle_updates', (data) ->
+  socket.on "gtfsr/#{stop.data('id')}/vehicle_updates", (data) ->
     update_vehicle_marker data
 
   # subscribe to trip day updates
   socket.on 'gtfsr/trip_day_update', (service_id) ->
     $('#schedule').data('day', moment().hours(0).minutes(0).seconds(0))
     get_schedule service_id
+
+  # subscribe to stop trip updates
+  socket.on "gtfsr/#{stop.data('id')}/trip_update_updates", (data) ->
+    jq_time = $(".time[data-trip-id='#{data.trip_id}']")
+    new_time = jq_time.data('timestamp') + data.arrival
+    class_name = if data.arrival>0 then 'late' else 'early'
+    jq_time.html("#{moment.unix(new_time).format('h:mm A')}*").addClass(class_name)
 
   # scroll timetable for route to time that are nearest to timestamp
   scroll_to_nearest_time = (route, timestamp) ->
@@ -38,7 +45,7 @@ $(document).ready ->
 
   # get schedule
   get_schedule = (service_id) ->
-    $.get "#{stop.data('id')}/schedules/#{service_id}", (data) ->
+    $.get "#{stop.data('code')}/schedules/#{service_id}", (data) ->
       sorted_times = _.groupBy _.sortBy(data, (time) ->
         time.arrival_time
       ), (time) -> time.route_short_name
@@ -58,7 +65,7 @@ $(document).ready ->
       _.each $('.route'), (e) ->
         selector = "##{e.id} .scroller-wrapper"
         scroller = new IScroll selector, {
-          mouseWheel: true,
+          #mouseWheel: true,
           scrollX: true,
           scrollY: false,
           keyBinding: true,
@@ -71,7 +78,7 @@ $(document).ready ->
       window.scrollers = _.clone scrollers
 
       # TODO
-      $('.time').on 'hover', (e) ->
+      $('.time').on 'click', (e) ->
         content = "towards <b>#{$(e.target).data('trip-headsign')}</b>"
 
       scroll_to_nearest_times moment().unix()
@@ -100,7 +107,7 @@ $(document).ready ->
 
       vehicle_map_icon = L.divIcon(
         iconSize: null,
-        html:"<span class='vehicle_map_text' style='border-color:#{route_colors[route]}'>#{route}</span>",
+        html:"<div class='vehicle_map_text' style='border-color:#{route_colors[route]}; transform:rotate(#{feature.properties.bearing}deg); -webkit-transform:rotate(#{feature.properties.bearing}deg); -moz-transform:rotate(#{feature.properties.bearing}deg);'>#{route}</div>",
         className:"vehicle_map_icon"
       )
 
@@ -131,7 +138,7 @@ $(document).ready ->
     L.mapbox.markerLayer(stop_geojson).addTo(map)
 
     color_index = 0
-    $.get "#{stop.data('id')}/routes.json", (data) ->
+    $.get "#{stop.data('code')}/routes.json", (data) ->
       L.geoJson(data, style: (feature) ->
         route_name = feature.properties.short_name
 
