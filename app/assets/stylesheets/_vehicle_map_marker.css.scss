@@ -1,0 +1,18 @@
+.vehicle_marker_icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50% 50% 50% 0;
+  border: 1px solid #ccc;
+  -webkit-transform: rotate(135deg);
+}
+
+.vehicle_marker_icon .text {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  margin: 2px 0 0 2px;
+  border-radius: 50%;
+  background: white;
+  text-align: center;
+  -webkit-transform: rotate(225deg);
+}

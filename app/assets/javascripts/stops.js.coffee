@@ -35,7 +35,7 @@ $(document).ready ->
 
     index = ($(selector).filter (index) ->
       $(this).data('timestamp') > timestamp
-    ).first().data('index') #|| $(selector).length
+    ).first().data('index') || $(selector).length
 
     scrollers[route].scrollTo index*time_width*-1, 0, '2ms'
     
@@ -107,7 +107,11 @@ $(document).ready ->
 
       vehicle_map_icon = L.divIcon(
         iconSize: null,
-        html:"<div class='vehicle_map_text' style='border-color:#{route_colors[route]}; transform:rotate(#{feature.properties.bearing}deg); -webkit-transform:rotate(#{feature.properties.bearing}deg); -moz-transform:rotate(#{feature.properties.bearing}deg);'>#{route}</div>",
+        html:"
+          <div class='vehicle_marker_icon' style='background-color:#{route_colors[route]}; transform:rotate(#{135+feature.properties.bearing}deg); -webkit-transform:rotate(#{135+feature.properties.bearing}deg); -moz-transform:rotate(#{135+feature.properties.bearing}deg);'>
+            <div class='text' style='transform:rotate(#{215-feature.properties.bearing}deg); -webkit-transform:rotate(#{215-feature.properties.bearing}deg); -moz-transform:rotate(#{215-feature.properties.bearing}deg)'>#{route}</div>
+          </div>
+        ",
         className:"vehicle_map_icon"
       )
 
