@@ -9,7 +9,7 @@ class TripDayPublisher
     if trip_day
       self.logger.info("found trip with service_id #{trip_day.service_id} for #{Date.current}")
       $redis.set 'trip_day', trip_day.service_id
-      $redis.publish 'gtfsr/trip_day_update', trip_day.service_id
+      $redis.publish 'gtfsr/trip_day_update', "{\"service_id\": \"#{trip_day.service_id}\"}"
     end
   end
 

@@ -18,9 +18,10 @@ $(document).ready ->
     update_vehicle_marker data
 
   # subscribe to trip day updates
-  socket.on 'gtfsr/trip_day_update', (service_id) ->
+  socket.on 'gtfsr/trip_day_update', (data) ->
     $('#schedule').data('day', moment().hours(0).minutes(0).seconds(0))
-    get_schedule service_id
+    $('#schedule').data('service-id', data.service_id)
+    get_schedule data.service_id
 
   # subscribe to stop trip updates
   socket.on "gtfsr/#{stop.data('id')}/trip_update_updates", (data) ->
@@ -37,7 +38,7 @@ $(document).ready ->
       $(this).data('timestamp') > timestamp
     ).first().data('index') || $(selector).length
 
-    scrollers[route].scrollTo index*time_width*-1, 0, '2ms'
+    scrollers[route].scrollTo (index-1)*time_width*-1, 0, '2ms'
     
   scroll_to_nearest_times = (timestamp) ->
     _.each $('.route'), (e) ->
@@ -162,6 +163,9 @@ $(document).ready ->
 
   setup_map()
   get_schedule service_id
+
+  $('#nearest-arrival').on 'click', (e) ->
+    scroll_to_nearest_times moment().unix()
   
   document.addEventListener 'touchmove', (e) ->
     e.preventDefault()

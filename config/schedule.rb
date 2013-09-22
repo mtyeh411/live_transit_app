@@ -28,6 +28,6 @@ every 1.minutes do
   runner "GtfsrParser.perform_async('#{MCRO_ENDPOINT}', 'MCRO')"
 end
 
-every 1.day, :at=>'12 am' do
+every 1.day, :at=>'2 am' do
   runner "TripDayPublisher.perform"
 end

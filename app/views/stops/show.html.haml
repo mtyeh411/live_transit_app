@@ -2,6 +2,11 @@
 
   #map
 
+  %h3 
+    Scheduled Arrival Times
+    .pull-right 
+      %button.btn.btn-primary#nearest-arrival Jump to nearest arrival
+
   #schedule{ :"data-service-id" => "#{@trip_day}", :"data-day" => "#{Date.current.in_time_zone.to_i}" }
     Loading schedule for #{Date.current.strftime "%m/%d/%Y"}...
 
