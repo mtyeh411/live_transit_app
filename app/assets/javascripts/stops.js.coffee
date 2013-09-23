@@ -30,7 +30,7 @@ $(document).ready ->
     punctuality = if data.arrival>0 then 'late' else 'early'
     jq_time.attr('data-timestamp', new_time)
     jq_time.attr('data-punctuality', punctuality)
-    jq_time.html("#{moment.unix(new_time).format('h:mm A')}*").addClass(punctuality)
+    jq_time.html("#{moment.unix(new_time).format('h:mm A')}*")
 
     _.each $('.route'), (e) ->
       sort_times e.id
@@ -69,7 +69,7 @@ $(document).ready ->
   # show next arrival time given route DOM id and next arrival data
   show_next_arrival = (route, data) ->
     content = "#{moment.unix(data['timestamp']).format('h:mm A')}#{if data['punctuality'] then '*' else ''} to #{data.tripHeadsign}"
-    $("##{route} .next-arrival").html(content).addClass(data['punctuality'])
+    $("##{route} .next-arrival").html(content).attr('data-punctuality', data['punctuality'])
 
   # get schedule
   get_schedule = (service_id) ->
