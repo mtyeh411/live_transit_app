@@ -34,11 +34,16 @@ $(document).ready ->
   scroll_to_nearest_time = (route, timestamp) ->
     selector = "##{route} .scroller li"
 
-    index = ($(selector).filter (index) ->
+    next_arrival_data = ($(selector).filter (index) ->
       $(this).data('timestamp') > timestamp
-    ).first().data('index') || $(selector).length
+    ).first().data()
+    index = next_arrival_data.index || $(selector).length
 
-    scrollers[route].scrollTo (index-1)*time_width*-1, 0, '2ms'
+    scrollers[route].scrollTo (index)*time_width*-1, 0, '2ms'
+
+    next_arrival_data['formatted-timestamp'] = moment.unix(next_arrival_data.timestamp).format('h:mm A')
+    console.log next_arrival_data
+    $("##{route} .next-arrival").html "#{next_arrival_data['formatted-timestamp']} to #{next_arrival_data.tripHeadsign}"
     
   scroll_to_nearest_times = (timestamp) ->
     _.each $('.route'), (e) ->
