@@ -8,7 +8,7 @@ $(document).ready ->
   scrollers = {}
   route_colors = {}
   colors = ["red", "green", "blue", "yellow", "cyan", "magenta"]
-  time_width = 131 # default
+  scroller_item_width = 131 # default
 
   socket = io.connect "http://#{location.hostname}:5001"
   map = L.mapbox.map('map', 'mtyeh411.map-g1l1wfpm').setView(stop_coords, 16)
@@ -39,17 +39,25 @@ $(document).ready ->
     ).first().data()
 
     if next_arrival_data
-      index = next_arrival_data['index']
-      next_arrival_data['formatted-timestamp'] = moment.unix(next_arrival_data.timestamp).format('h:mm A')
-      $("##{route} .next-arrival").html "#{next_arrival_data['formatted-timestamp']} to #{next_arrival_data.tripHeadsign}"
+      if moment.unix(next_arrival_data['timestamp']).diff(moment(), 'minutes') < 30
+        index = next_arrival_data['index']
+        show_next_arrival route, next_arrival_data
+      else
+        index = next_arrival_data['index']-1
     else
       index = $(selector).length
 
-    scrollers[route].scrollTo (index)*time_width*-1, 0, '2ms'
-    
+    scrollers[route].scrollTo (index)*scroller_item_width*-1, 0, '2ms'
+   
+  # scroll to nearest times
   scroll_to_nearest_times = (timestamp) ->
     _.each $('.route'), (e) ->
       scroll_to_nearest_time e.id, timestamp
+
+  # show next arrival time given route DOM id and next arrival data
+  show_next_arrival = (route, data) ->
+      data['formatted-timestamp'] = moment.unix(data.timestamp).format('h:mm A')
+      $("##{route} .next-arrival").html "#{data['formatted-timestamp']} to #{data.tripHeadsign}"
 
   # get schedule
   get_schedule = (service_id) ->
@@ -65,9 +73,9 @@ $(document).ready ->
 
       timetable = HandlebarsTemplates['stops/stop_times'] context
       $('#schedule').html(timetable)
-      time_width = $('.time').outerWidth()
+      scroller_item_width = $('.time').outerWidth()
       _.each $('.scroller'), (el) ->
-        $(el).width ($(el).find('li').length+5)*time_width
+        $(el).width ($(el).find('li').length+5)*scroller_item_width
       
       # set up scrollers
       _.each $('.route'), (e) ->
