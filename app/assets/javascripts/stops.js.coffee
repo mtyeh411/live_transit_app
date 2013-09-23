@@ -26,24 +26,36 @@ $(document).ready ->
   # subscribe to stop trip updates
   socket.on "gtfsr/#{stop.data('id')}/trip_update_updates", (data) ->
     jq_time = $(".time[data-trip-id='#{data.trip_id}']")
-    new_time = jq_time.data('timestamp') + data.arrival
-    class_name = if data.arrival>0 then 'late' else 'early'
-    jq_time.html("#{moment.unix(new_time).format('h:mm A')}*").addClass(class_name)
+    new_time = jq_time.data('scheduled-arrival') + data.arrival
+    punctuality = if data.arrival>0 then 'late' else 'early'
+    jq_time.attr('data-timestamp', new_time)
+    jq_time.attr('data-punctuality', punctuality)
+    jq_time.html("#{moment.unix(new_time).format('h:mm A')}*").addClass(punctuality)
+
+    _.each $('.route'), (e) ->
+      sort_times e.id
+
+  # sort times for a route
+  sort_times = (route) ->
+    times = _.sortBy $("##{route} .scroller li"), (time) ->
+      return $(time).attr('data-timestamp')
+    $("##{route} .scroller ul").html times
+
 
   # scroll timetable for route to time that are nearest to timestamp
   scroll_to_nearest_time = (route, timestamp) ->
     selector = "##{route} .scroller li"
 
-    next_arrival_data = ($(selector).filter (index) ->
+    next_arrival = ($(selector).filter (index) ->
       $(this).data('timestamp') > timestamp
-    ).first().data()
+    ).first()
 
-    if next_arrival_data
-      if moment.unix(next_arrival_data['timestamp']).diff(moment(), 'minutes') < 30
-        index = next_arrival_data['index']
-        show_next_arrival route, next_arrival_data
+    if next_arrival.data()
+      if moment.unix(next_arrival.data('timestamp')).diff(moment(), 'minutes') < 30
+        index = $(selector).index(next_arrival)+1
+        show_next_arrival route, next_arrival.data()
       else
-        index = next_arrival_data['index']-1
+        index = $(selector).index(next_arrival)
     else
       index = $(selector).length
 
@@ -56,8 +68,8 @@ $(document).ready ->
 
   # show next arrival time given route DOM id and next arrival data
   show_next_arrival = (route, data) ->
-      data['formatted-timestamp'] = moment.unix(data.timestamp).format('h:mm A')
-      $("##{route} .next-arrival").html "#{data['formatted-timestamp']} to #{data.tripHeadsign}"
+    content = "#{moment.unix(data['timestamp']).format('h:mm A')}#{if data['punctuality'] then '*' else ''} to #{data.tripHeadsign}"
+    $("##{route} .next-arrival").html(content).addClass(data['punctuality'])
 
   # get schedule
   get_schedule = (service_id) ->
@@ -73,7 +85,7 @@ $(document).ready ->
 
       timetable = HandlebarsTemplates['stops/stop_times'] context
       $('#schedule').html(timetable)
-      scroller_item_width = $('.time').outerWidth()
+      scroller_item_width = $('.scroller li.time').outerWidth()
       _.each $('.scroller'), (el) ->
         $(el).width ($(el).find('li').length+5)*scroller_item_width
       

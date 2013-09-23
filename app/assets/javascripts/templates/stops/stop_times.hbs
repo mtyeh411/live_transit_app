@@ -3,14 +3,14 @@
   <div class="route row" id="route-{{this.[0]}}">
     <span class="span1 name">Route {{this.[0]}}</span>
 
-    <span class="span3 next-arrival"></span>
+    <span class="span3 next-arrival time"></span>
 
     <span class="span8 timetable">
       <div class="scroller-wrapper">
         <div class="scroller">
           <ul class="times unstyled inline">
             {{#each this.[1]}}
-              <li class="time" data-index="{{math @index 1}}" data-timestamp="{{arrival_time}}" data-trip-headsign="{{trip_headsign}}" data-trip-id="{{trip_id}}">
+              <li class="time" data-scheduled-arrival="{{arrival_time}}" data-timestamp="{{arrival_time}}" data-trip-headsign="{{trip_headsign}}" data-trip-id="{{trip_id}}">
                 {{display_time arrival_time}}
               </li>
             {{/each}}
