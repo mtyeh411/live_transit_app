@@ -10,11 +10,11 @@ $(document).ready ->
   colors = ["red", "green", "blue", "yellow", "cyan", "magenta"]
   scroller_item_width = 131 # default
 
-  socket = io.connect "http://#{location.hostname}:5001"
+  window.socket = io.connect "http://#{location.hostname}:5001"
   map = L.mapbox.map('map', 'mtyeh411.map-g1l1wfpm').setView(stop_coords, 16)
 
   # subscribe to vehicle updates
-  socket.on "gtfsr/#{stop.data('id')}/vehicle_updates", (data) ->
+  socket.on "gtfsr/#{stop.data('code')}/vehicle_updates", (data) ->
     update_vehicle_marker data
 
   # subscribe to trip day updates
@@ -24,7 +24,7 @@ $(document).ready ->
     get_schedule data.service_id
 
   # subscribe to stop trip updates
-  socket.on "gtfsr/#{stop.data('id')}/trip_update_updates", (data) ->
+  socket.on "gtfsr/#{stop.data('code')}/trip_update_updates", (data) ->
     jq_time = $(".time[data-trip-id='#{data.trip_id}']")
     new_time = jq_time.data('scheduled-arrival') + data.arrival
     punctuality = if data.arrival>0 then 'late' else 'early'
