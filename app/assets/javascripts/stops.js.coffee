@@ -110,6 +110,11 @@ $(document).ready ->
       $('.time').on 'click', (e) ->
         content = "towards <b>#{$(e.target).data('trip-headsign')}</b>"
 
+      $('.timetable').addClass('hidden-xs')
+
+      $('.route.row :not(.timetable)').on 'click', (e) ->
+        $(this).closest('.route').children('.timetable').toggleClass('hidden-xs')
+
       scroll_to_nearest_times moment().unix()
 
   # remove old vehicle markers
@@ -138,7 +143,7 @@ $(document).ready ->
         iconSize: null,
         html:"
           <div class='vehicle_marker_icon' style='background-color:#{route_colors[route]}; transform:rotate(#{135+feature.properties.bearing}deg); -webkit-transform:rotate(#{135+feature.properties.bearing}deg); -moz-transform:rotate(#{135+feature.properties.bearing}deg);'>
-            <div class='text' style='transform:rotate(#{215-feature.properties.bearing}deg); -webkit-transform:rotate(#{215-feature.properties.bearing}deg); -moz-transform:rotate(#{215-feature.properties.bearing}deg)'>#{route}</div>
+            <div class='map-text' style='transform:rotate(#{215-feature.properties.bearing}deg); -webkit-transform:rotate(#{215-feature.properties.bearing}deg); -moz-transform:rotate(#{215-feature.properties.bearing}deg)'>#{route}</div>
           </div>
         ",
         className:"vehicle_map_icon"
@@ -194,11 +199,5 @@ $(document).ready ->
 
   $('#nearest-arrival').on 'click', (e) ->
     scroll_to_nearest_times moment().unix()
- 
-  ###
-  document.addEventListener 'touchmove', (e) ->
-    e.preventDefault()
-  , false
-  ###
 
   true
