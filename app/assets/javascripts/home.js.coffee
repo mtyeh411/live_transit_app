@@ -10,3 +10,9 @@ $(document).ready ->
       stops = HandlebarsTemplates['stops/stops'] data
       $('#stops').html stops
 
+  fetch_stops_near_me = (position) ->
+    fetch_stops "#{position.coords.latitude},#{position.coords.longitude}"
+
+  if navigator.geolocation
+    navigator.geolocation.getCurrentPosition fetch_stops_near_me
+
