@@ -1,6 +1,14 @@
 #stop{:"data-id"=>"#{@stop.stop_id}", :"data-code"=>"#{@stop.stop_code}", :"data-lat"=>"#{@stop.stop_lat}", :"data-lon"=>"#{@stop.stop_lon}"}
+  
+  .row
+    %h2
+      %span
+        = "Bus stop #{@stop.stop_code}"
+      %small.pull-right.text-right
+        = @stop.stop_name
 
-  #map.row
+  .row
+    #map
 
   %h3
     Arrival Times

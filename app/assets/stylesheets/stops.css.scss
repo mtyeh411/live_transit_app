@@ -4,8 +4,9 @@
 
 @import 'vehicle_map_marker';
 
-#map { 
-  height: 500px; 
+#map {  height: 500px; }
+@media (max-width: 768px) {
+  #map { margin-top: 5%; }
 }
 
 .no-time { padding-left: 5px; } 
