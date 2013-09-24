@@ -1,10 +1,13 @@
-{{#this}}
+<h3>Select a stop</h3>
 
-  <div class="stop row-fluid" id="{{stop_code}}">
+{{#this}}
+  <div class="stop row" id="{{stop_code}}">
+    <small>
     <a href="stops/{{stop_code}}">
       {{stop_code}}
-      <b>{{stop_name}}</b>
+      <small>{{stop_name}}</small>
     </a>
+    </small>
   </div>
-
 {{/this}}
+

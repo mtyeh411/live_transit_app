@@ -1,14 +1,13 @@
-= content_tag "div", id: "stop", data:{id:@stop.stop_id, code:@stop.stop_code, lat:@stop.stop_lat, lon:@stop.stop_lon} do
+#stop{:"data-id"=>"#{@stop.stop_id}", :"data-code"=>"#{@stop.stop_code}", :"data-lat"=>"#{@stop.stop_lat}", :"data-lon"=>"#{@stop.stop_lon}"}
 
-  #map.row-fluid
+  #map.row
 
-  %h3.row-fluid
+  %h3
     Arrival Times
-    .pull-right 
+    .pull-right.hidden-xs
       %button.btn.btn-primary#nearest-arrival Jump to nearest arrival
 
-  .container-fluid
-    #schedule.row-fluid{ :"data-service-id" => "#{@trip_day}", :"data-day" => "#{Date.current.in_time_zone.to_i}" }
-      Loading schedule for #{Date.current.strftime "%m/%d/%Y"}...
+  #schedule.row{ :"data-service-id" => "#{@trip_day}", :"data-day" => "#{Date.current.in_time_zone.to_i}" }
+    Loading schedule for #{Date.current.strftime "%m/%d/%Y"}...
 
   = javascript_include_tag 'stops'

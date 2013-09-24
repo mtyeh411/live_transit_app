@@ -45,9 +45,10 @@ gem 'handlebars_assets'
 gem 'haml'
 
 # Use Bootstrap with Less support
-gem 'therubyracer', :platforms => :ruby
-gem 'less-rails'
-gem 'twitter-bootstrap-rails'
+#gem 'therubyracer', :platforms => :ruby
+#gem 'less-rails'
+#gem 'twitter-bootstrap-rails'
+gem 'anjlab-bootstrap-rails', :require => 'bootstrap-rails', :github => 'anjlab/bootstrap-rails', :branch => '3.0.0'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'

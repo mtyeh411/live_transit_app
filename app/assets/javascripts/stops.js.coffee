@@ -194,9 +194,11 @@ $(document).ready ->
 
   $('#nearest-arrival').on 'click', (e) ->
     scroll_to_nearest_times moment().unix()
-  
+ 
+  ###
   document.addEventListener 'touchmove', (e) ->
     e.preventDefault()
   , false
+  ###
 
   true

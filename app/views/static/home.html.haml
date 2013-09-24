@@ -1,8 +1,10 @@
-.hero-unit
-  #search.input-append
-    %input.span8{type:'text', placeholder:'Enter location'}
-    %button.btn.btn-primary.hidden-phone
-      Find bus stop
+.jumbotron
+  .row
+    #search.input-group.col-lg-8.col-md-offset-2
+      %input.form-control.input-lg{type:'text', placeholder:'Enter location'}
+      .input-group-btn.hidden-xs
+        %button.btn.btn-primary.input-lg
+          Find nearby stops
 
   #stops.container-fluid
 

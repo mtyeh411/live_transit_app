@@ -1,14 +1,14 @@
 {{#routes}}
 
-  <div class="route row-fluid" id="route-{{this.[0]}}">
-    <span class="span1 name">Route {{this.[0]}}</span>
+  <div class="route row" id="route-{{this.[0]}}">
+    <span class="col-md-2 col-sm-2 col-xs-4 name">Route {{this.[0]}}</span>
 
-    <span class="span3 next-arrival time"></span>
+    <span class="col-md-3 col-sm-5 col-xs-8 next-arrival time"></span>
 
-    <span class="span8 timetable">
+    <span class="col-md-7 col-sm-5 col-xs-12 hidden-xs timetable">
       <div class="scroller-wrapper">
         <div class="scroller">
-          <ul class="times unstyled inline">
+          <ul class="times list-unstyled list-inline">
             {{#each this.[1]}}
               <li class="time" data-scheduled-arrival="{{arrival_time}}" data-timestamp="{{arrival_time}}" data-trip-headsign="{{trip_headsign}}" data-trip-id="{{trip_id}}">
                 {{display_time arrival_time}}

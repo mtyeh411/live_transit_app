@@ -12,6 +12,7 @@ $(document).ready ->
 
   fetch_stops_near_me = (position) ->
     fetch_stops "#{position.coords.latitude},#{position.coords.longitude}"
+    $('#search input').attr('placeholder', 'Current location')
 
   if navigator.geolocation
     navigator.geolocation.getCurrentPosition fetch_stops_near_me
