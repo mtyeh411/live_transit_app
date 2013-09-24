@@ -106,15 +106,6 @@ $(document).ready ->
 
       window.scrollers = _.clone scrollers
 
-      # TODO
-      $('.time').on 'click', (e) ->
-        content = "towards <b>#{$(e.target).data('trip-headsign')}</b>"
-
-      $('.timetable').addClass('hidden-xs')
-
-      $('.route.row :not(.timetable)').on 'click', (e) ->
-        $(this).closest('.route').children('.timetable').toggleClass('hidden-xs')
-
       scroll_to_nearest_times moment().unix()
 
   # remove old vehicle markers
