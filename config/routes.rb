@@ -1,9 +1,17 @@
 GtfsRealtime::Application.routes.draw do
+  root 'static#home'
+
   resources :stops, only: :show, :constraints => {:format => :html} do 
     resources :routes, only: :index, :constraints => {:format => :json}
-  end
 
-  get 'stops/:stop_id/schedules/:service_id' => 'stops#show_times', :constraints => {:format => :json}
+    collection do
+      get 'near/:location', :action => :index, :constraints => {:format => :json, :location => /.*/}, :defaults => {:format => :json}
+    end
+
+    member do
+      get 'schedules/:service_id', :action => :show_times, :constraints => {:format => :json}
+    end
+  end
 
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'

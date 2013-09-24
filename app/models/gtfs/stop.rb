@@ -3,6 +3,8 @@ class Gtfs::Stop < ActiveRecord::Base
   has_many :trips, :through => :stop_times
   has_many :routes, -> {distinct}, :through => :trips
 
+  acts_as_mappable :lat_column_name => :stop_lat, :lng_column_name => :stop_lon
+
   def geometry
     {
       :type => "Point",

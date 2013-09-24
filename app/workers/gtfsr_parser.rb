@@ -3,7 +3,7 @@ require 'net/http'
 class GtfsrParser
   include ActiveModel::Validations
   include Sidekiq::Worker
-  sidekiq_options :queue => :gtfsr_parsers, :backtrace => true
+  sidekiq_options :queue => :gtfsr_parsers, :backtrace => true, :retry => 3
 
   attr_accessor :uri
   validates_format_of :uri, :with => URI::regexp

@@ -69,7 +69,8 @@ $(document).ready ->
   # show next arrival time given route DOM id and next arrival data
   show_next_arrival = (route, data) ->
     content = "#{moment.unix(data['timestamp']).format('h:mm A')}#{if data['punctuality'] then '*' else ''} to #{data.tripHeadsign}"
-    $("##{route} .next-arrival").html(content).attr('data-punctuality', data['punctuality'])
+    punctuality = data['punctuality'] || ''
+    $("##{route} .next-arrival").html(content).attr('data-punctuality', punctuality)
 
   # get schedule
   get_schedule = (service_id) ->

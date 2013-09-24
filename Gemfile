@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
 gem 'foreman'
 
+gem 'geokit-rails'
+
 # Use for GTFS-R fetching/parsing
 gem 'ruby-protocol-buffers'
 gem 'sidekiq'
@@ -18,8 +20,6 @@ gem 'foreigner', '1.2.1'
 gem 'activerecord-import'
 gem 'rubyzip'
 gem 'time_zone_ext'
-
-gem 'haml'
 
 group :development do
   gem 'puppet'
@@ -42,6 +42,7 @@ gem 'rails', '4.0.0'
 gem 'sqlite3'
 
 gem 'handlebars_assets'
+gem 'haml'
 
 # Use Bootstrap with Less support
 gem 'therubyracer', :platforms => :ruby

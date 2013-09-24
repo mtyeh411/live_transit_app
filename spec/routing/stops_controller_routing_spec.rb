@@ -1,16 +1,26 @@
 require 'spec_helper'
 
 describe StopsController do
+  let(:resource) { 'stops' }
+  let(:id) { '21234' }
+
+  describe 'get #index' do
+    let(:coords) {"38.11,-77.11"}
+    let(:url) {"/#{resource}/near/coords/#{coords}"}
+
+    it 'routes to index' do
+      get(url).should route_to(:controller=>resource, :action=>'index', :coords=>coords, :search_type=>'coords', :format=>:json)
+    end
+  end
+
   describe 'get #show' do
-    let(:resource) { 'stops' }
-    let(:id) { '21234' }
 
     context 'nests schedule per route' do
       let(:service_id) { 'abc123' }
       let(:url) {"/#{resource}/#{id}/schedules/#{service_id}"}
 
       it 'routes to stop schedule' do
-        get(url).should route_to(:controller=>resource, :action=>'show_times', :stop_id=>id, :service_id=>service_id)
+        get(url).should route_to(:controller=>resource, :action=>'show_times', :id=>id, :service_id=>service_id)
       end
 
       it 'only serves json' do

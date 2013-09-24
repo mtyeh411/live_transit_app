@@ -28,6 +28,7 @@
 # Ignore custom configs
 config/vagrant/*.yml
 config/schedule.rb
+config/initializers/geokit_config.rb
 
 # Ignore vagrant machines
 .vagrant

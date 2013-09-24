@@ -20,5 +20,5 @@
 //= require underscorejs 
 //= require handlebars.runtime
 //= require iscrolljs
-//= require_tree .
 //= require_tree ./templates
+//= require_tree ./handlebars
