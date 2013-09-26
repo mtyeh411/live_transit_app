@@ -9,16 +9,16 @@ Exec {
   path => ['/usr/sbin', '/usr/bin', '/sbin', '/bin']
 }
 
-# --- Databases ---
-include postgresql::server
+# --- Datastores ---
+package { 'libpq-dev': 
+  ensure => installed
+}
+class { 'redis': }
 
 # --- Node ---
 package { 'nodejs':
   ensure => installed
 }
-
-# --- Redis ---
-class { 'redis': }
 
 # --- Ruby ---
 include rvm

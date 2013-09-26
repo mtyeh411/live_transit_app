@@ -21,6 +21,10 @@ gem 'activerecord-import'
 gem 'rubyzip'
 gem 'time_zone_ext'
 
+group :production do
+  gem 'pg'
+end
+
 group :development do
   gem 'puppet'
   gem 'debugger'
