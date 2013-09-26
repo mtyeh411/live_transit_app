@@ -12,13 +12,13 @@ Exec {
 # --- Databases ---
 include postgresql::server
 
-# --- Packages ---
+# --- Node ---
 package { 'nodejs':
   ensure => installed
 }
-package { 'redis-server': 
-  ensure => installed
-}
+
+# --- Redis ---
+class { 'redis': }
 
 # --- Ruby ---
 include rvm

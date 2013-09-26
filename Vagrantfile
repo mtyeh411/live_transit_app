@@ -5,8 +5,8 @@ require 'yaml'
 
 Vagrant.configure('2') do |config|
   config.vm.define "local" do |local|
-    local.vm.box     = 'precise32'
-    local.vm.box_url = 'http://files.vagrantup.com/precise32.box'
+    local.vm.box     = 'precise64'
+    local.vm.box_url = 'http://files.vagrantup.com/precise64.box'
 
     local.vm.hostname = 'gtfsr'
     local.vm.network :forwarded_port, guest: 3000, host: 3000
@@ -46,8 +46,11 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.provider 'virtualbox' do |v|
-    v.gui = true
+  config.vm.provider 'virtualbox' do |vb|
+    vb.gui = true
+    # http://github.com/rubygems/rubygems/issues/513#issuecomment-24156984
+    vb.customize ['modifyvm', :id, '--natdnsproxy1', 'off'] 
+    vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'off']
   end
 
   config.vm.provision :shell, path: 'config/vagrant/bootstrap_puppet.sh'

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bootstrap Puppet on a Debian/Ubuntu box
+# Bootstrap Puppet on a Ubuntu Precise box
 
 echo "Configuring PuppetLabs repo..."
 wget http://apt.puppetlabs.com/puppetlabs-release-precise.deb 2> /dev/null
