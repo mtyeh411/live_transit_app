@@ -1,33 +1,31 @@
-{{#if route}}
-  {{#routes}}
+{{#each routes}}
 
-    <div class="route row" id="route-{{this.[0]}}">
-      <span class="col-md-2 col-sm-2 col-xs-4 name">
-        <span class="color-box"></span>
-        Route {{this.[0]}}
-      </span>
+  <div class="route row" id="route-{{this.[0]}}">
+    <span class="col-md-2 col-sm-2 col-xs-4 name">
+      <span class="color-box"></span>
+      Route {{this.[0]}}
+    </span>
 
-      <span class="col-md-3 col-sm-5 col-xs-8 next-arrival time"></span>
+    <span class="col-md-3 col-sm-5 col-xs-8 next-arrival time"></span>
 
-      <span class="col-md-7 col-sm-5 col-xs-11 hidden-xs timetable">
-        <div class="scroller-wrapper">
-          <div class="scroller">
-            <ul class="times list-unstyled list-inline">
-              {{#each this.[1]}}
-                <li class="time" data-scheduled-arrival="{{arrival_time}}" data-timestamp="{{arrival_time}}" data-trip-headsign="{{trip_headsign}}" data-trip-id="{{trip_id}}">
-                  {{display_time arrival_time}}
-                </li>
-              {{/each}}
-            </ul>
+    <span class="col-md-7 col-sm-5 col-xs-11 hidden-xs timetable">
+      <div class="scroller-wrapper">
+        <div class="scroller">
+          <ul class="times list-unstyled list-inline">
+            {{#each this.[1]}}
+              <li class="time" data-scheduled-arrival="{{arrival_time}}" data-timestamp="{{arrival_time}}" data-trip-headsign="{{trip_headsign}}" data-trip-id="{{trip_id}}">
+                {{display_time arrival_time}}
+              </li>
+            {{/each}}
+          </ul>
 
-            <span class="no-time">No more times scheduled for today.</span>
-          </div>
+          <span class="no-time">No more times scheduled for today.</span>
         </div>
-      </span>
+      </div>
+    </span>
 
-    </div>
+  </div>
 
-  {{/routes}}
 {{else}}
-  No times scheduled for today.
-{{/if}}
+  No times scheduled.
+{{/each}}
