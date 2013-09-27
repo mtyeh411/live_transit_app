@@ -6,22 +6,29 @@
         = "Bus stop #{@stop.stop_code}"
       %small
         = @stop.stop_name
+      %span#current-time.pull-right.visible-lg
+        = Time.current.in_time_zone.strftime '%m/%d/%y %l:%M %p'
 
   .row
-    #next-arrivals.col-md-5.hidden-sm.hidden-xs{ :"data-service-id" => "#{@trip_day}", :"data-day" => "#{Date.current.in_time_zone.to_i}" }
+    .next-arrivals.col-md-5.hidden-sm.hidden-xs{ :"data-service-id" => "#{@trip_day}", :"data-day" => "#{Date.current.in_time_zone.to_i}" }
       Loading schedule for #{Date.current.strftime "%m/%d/%Y"}...
     #map.col-md-7.col-sm-12.col-xs-12
 
-  #schedule-controls
-    %h3 
-      %span.title.hidden
-        Timetable
-      %span.pull-right
-        %button#toggle-timetable.btn.btn-primary.hidden
-          Show timetable
-        %button#nearest-arrival.btn.hidden
-          Jump to upcoming arrivals
-          
-  #schedule.row{ :"data-service-id" => "#{@trip_day}", :"data-day" => "#{Date.current.in_time_zone.to_i}" }
+  .row.visible-xs.visible-sm
+    .next-arrivals.col-sm-12{ :"data-service-id" => "#{@trip_day}", :"data-day" => "#{Date.current.in_time_zone.to_i}" }
+      Loading schedule for #{Date.current.strftime "%m/%d/%Y"}...
+
+  #schedule-wrapper.hidden-xs
+    #schedule-controls.row
+      %h3 
+        %span.title.hidden
+          Timetable
+        %span.pull-right
+          %button#toggle-timetable.btn.btn-primary.hidden
+            Show timetable
+          %button#nearest-arrival.btn.hidden
+            Jump to upcoming arrivals
+            
+    #schedule.row{ :"data-service-id" => "#{@trip_day}", :"data-day" => "#{Date.current.in_time_zone.to_i}" }
 
   = javascript_include_tag 'stops'

@@ -105,7 +105,7 @@ $(document).ready ->
       timetable = HandlebarsTemplates['stops/stop_times'] context
       arrivals = HandlebarsTemplates['stops/arrivals'] context
       $('#schedule').html(timetable)
-      $('#next-arrivals').html(arrivals)
+      $('.next-arrivals').html(arrivals)
 
       # tack on space at the end for 'no more time' msg
       _.each $('.scroller'), (el) ->
@@ -170,13 +170,13 @@ $(document).ready ->
 
     vehicle.marker.clearLayers() if vehicle.marker
     vehicle.marker = L.geoJson(data, pointToLayer: (feature, coords) ->
-      route = feature.properties.route
+      route_name = "route-#{feature.properties.route}"
 
       vehicle_map_icon = L.divIcon(
         iconSize: null,
         html:"
-          <div class='vehicle_marker_icon' style='background-color:#{route_colors[route]}; transform:rotate(#{135+feature.properties.bearing}deg); -webkit-transform:rotate(#{135+feature.properties.bearing}deg); -moz-transform:rotate(#{135+feature.properties.bearing}deg);'>
-            <div class='map-text' style='transform:rotate(#{215-feature.properties.bearing}deg); -webkit-transform:rotate(#{215-feature.properties.bearing}deg); -moz-transform:rotate(#{215-feature.properties.bearing}deg)'>#{route}</div>
+          <div class='vehicle_marker_icon' style='background-color:#{route_colors[route_name]}; transform:rotate(#{135+feature.properties.bearing}deg); -webkit-transform:rotate(#{135+feature.properties.bearing}deg); -moz-transform:rotate(#{135+feature.properties.bearing}deg);'>
+            <div class='map-text' style='transform:rotate(#{215-feature.properties.bearing}deg); -webkit-transform:rotate(#{215-feature.properties.bearing}deg); -moz-transform:rotate(#{215-feature.properties.bearing}deg)'>#{feature.properties.route}</div>
           </div>
         ",
         className:"vehicle_map_icon"
@@ -242,6 +242,10 @@ $(document).ready ->
     remove_old_vehicle_markers(5)
     scroll_to_nearest_times moment().unix()
   , 60*1000
+
+  setInterval ->
+    $('#current-time').text moment().format('MM/DD/YYYY h:mm A')
+  , 1000
 
   setup_map()
   get_schedule service_id

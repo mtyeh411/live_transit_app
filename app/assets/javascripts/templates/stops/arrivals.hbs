@@ -1,15 +1,15 @@
 <h3>
   Next Arrivals 
-  <small>within an hour</small>
+  <small>within the hour</small>
 </h3>
 
 {{#each routes}}
   <div class="route row skinny" id="route-{{this.[0]}}">
-    <span class="name col-md-4 hidden-sm hidden-xs">
+    <span class="name col-md-4">
       <span class="color-box"></span>
       Route {{this.[0]}}
     </span>
-    <span class="next-arrival time col-md-8 hidden-sm hidden-xs"></span>
+    <span class="next-arrival time col-md-8"></span>
   </div>
 {{else}}
   No times scheduled.
