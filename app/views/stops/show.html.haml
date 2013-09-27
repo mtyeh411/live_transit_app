@@ -4,7 +4,7 @@
     %h2
       %span
         = "Bus stop #{@stop.stop_code}"
-      %small.pull-right.text-right
+      %small
         = @stop.stop_name
 
   .row
@@ -13,7 +13,7 @@
   %h3
     Arrival Times
     .pull-right.hidden-xs
-      %button.btn.btn-primary#nearest-arrival Jump to nearest arrival
+      %button.btn.btn-primary#nearest-arrival Show upcoming arrivals
 
   #schedule.row{ :"data-service-id" => "#{@trip_day}", :"data-day" => "#{Date.current.in_time_zone.to_i}" }
     Loading schedule for #{Date.current.strftime "%m/%d/%Y"}...

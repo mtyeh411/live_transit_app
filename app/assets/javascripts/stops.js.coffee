@@ -1,13 +1,30 @@
 $(document).ready ->
-  # variables
   stop = $('#stop')
   stop_coords = [stop.data('lat'), stop.data('lon')]
   service_id = $('#schedule').data('service-id')
+  
+  # colors from the BYR color wheel
+  colors = [
+    "hsl(60, 99%, 60%)", # 12
+    "hsl(286, 98%, 35%)", # 6
+    "hsl(223, 100%, 50%)", # 3
+    "hsl(198, 99%, 41%)", # 9
+
+    "hsl(45, 100%, 49%)", # 1
+    "hsl(262, 100%, 32%)", # 7
+    "hsl(18, 98%, 51%)", # 4
+    "hsl(95, 56%, 44%)", # 10
+
+    "hsl(36, 98%, 49%)", # 2
+    "hsl(223, 100%, 50%)", # 8
+    "hsl(338, 75%, 37%)", #5
+    "hsl(68, 82%, 54%)", # 11
+  ]
 
   vehicle_markers = []
   scrollers = {}
   route_colors = {}
-  colors = ["red", "green", "blue", "yellow", "cyan", "magenta"]
+  color_index = 0
   scroller_item_width = 131 # default
 
   window.socket = io.connect "http://#{location.hostname}:5001"
@@ -89,6 +106,8 @@ $(document).ready ->
       scroller_item_width = $('.scroller li.time').outerWidth()
       _.each $('.scroller'), (el) ->
         $(el).width ($(el).find('li').length+5)*scroller_item_width
+
+      colorize_timetable()
       
       # set up scrollers
       _.each $('.route'), (e) ->
@@ -152,6 +171,26 @@ $(document).ready ->
     else
       vehicle_markers.push vehicle
 
+  # style route geojson feature
+  style_route_feature = (feature) ->
+    route_name = "route-#{feature.properties.short_name}"
+
+    if !route_colors[route_name]
+      route_colors[route_name] = colors[color_index]
+      color_index++
+
+    color: route_colors[route_name],
+    opacity: 0.2
+  
+  # gets called on each route feature before adding to geojson layer
+  on_each_route_feature = (feature, layer) ->
+    layer.bindPopup "<b>Route #{feature.properties.short_name}</b><br/><small>#{feature.properties.long_name}</small>"
+
+  # show route colors on stop_times timetable/schedule
+  colorize_timetable = () ->
+    $.each $('#schedule .route .color-box'), (i, el) ->
+      $(this).css 'background-color', route_colors[$(this).closest('.route').attr('id')]
+
   # setup map
   setup_map = () ->
     stop_geojson =
@@ -164,20 +203,15 @@ $(document).ready ->
       geometry:
         type: "Point",
         coordinates: [stop.data('lon'), stop.data('lat')]
+
     L.mapbox.markerLayer(stop_geojson).addTo(map)
 
-    color_index = 0
     $.get "#{stop.data('code')}/routes.json", (data) ->
-      L.geoJson(data, style: (feature) ->
-        route_name = feature.properties.short_name
-
-        if !route_colors[route_name]
-          route_colors[route_name] = colors[color_index]
-          color_index++
-
-        color: route_colors[route_name],
-        opacity: 0.2
+      L.geoJson(data,
+        style: style_route_feature,
+        onEachFeature: on_each_route_feature,
       ).addTo(map)
+      colorize_timetable()
 
   # timed methods
   setInterval ->

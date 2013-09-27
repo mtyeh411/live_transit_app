@@ -19,6 +19,11 @@ $scroller_height: 60px;
   min-height: $scroller_height;
   line-height: $scroller_height;
 }
+.color-box {
+  height: 1em;
+  width: 1em;
+  display: inline-block;
+}
 
 .scroller-wrapper {
 	position: relative;
