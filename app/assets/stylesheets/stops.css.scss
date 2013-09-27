@@ -14,7 +14,12 @@
 .time[data-punctuality=early] { background-color:rgb(155,211,155); }
 
 $scroller_height: 60px;
+$skinny_height: 40px;
 
+.skinny {
+  min-height: $skinny_height !important;
+  line-height: $skinny_height !important;
+}
 .route {
   min-height: $scroller_height;
   line-height: $scroller_height;

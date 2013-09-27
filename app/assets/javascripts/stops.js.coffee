@@ -68,8 +68,8 @@ $(document).ready ->
     ).first()
 
     if next_arrival.data()
-      if moment.unix(next_arrival.data('timestamp')).diff(moment(), 'minutes') < 30
-        index = $(selector).index(next_arrival)+1
+      if moment.unix(next_arrival.data('timestamp')).diff(moment(), 'minutes') < 60
+        index = $(selector).index(next_arrival)
         show_next_arrival route, next_arrival.data()
       else
         index = $(selector).index(next_arrival)
@@ -101,15 +101,20 @@ $(document).ready ->
         routes: _.pairs sorted_times
       }
 
+      # TODO DRY these hbs templates
       timetable = HandlebarsTemplates['stops/stop_times'] context
+      arrivals = HandlebarsTemplates['stops/arrivals'] context
       $('#schedule').html(timetable)
-      scroller_item_width = $('.scroller li.time').outerWidth()
+      $('#next-arrivals').html(arrivals)
+
+      # tack on space at the end for 'no more time' msg
       _.each $('.scroller'), (el) ->
         $(el).width ($(el).find('li').length+5)*scroller_item_width
 
       colorize_timetable()
       
-      # set up scrollers
+      # scrollers
+      scroller_item_width = $('.scroller li.time').outerWidth()
       _.each $('.route'), (e) ->
         selector = "##{e.id} .scroller-wrapper"
         scroller = new IScroll selector, {
@@ -122,10 +127,28 @@ $(document).ready ->
           click: true
         }
         scrollers[e.id] = scroller
-
-      window.scrollers = _.clone scrollers
-
       scroll_to_nearest_times moment().unix()
+  
+      # schedule controls
+      $('#schedule-controls #toggle-timetable.btn').removeClass('hidden')
+      $('#schedule').addClass('hidden') # must not be hidden in order to initiate scroller
+
+      # schedule control events
+      $('#nearest-arrival').on 'click', (e) ->
+        scroll_to_nearest_times moment().unix()
+
+      $('#toggle-timetable').on 'click', (e) ->
+        if $('#schedule').is(':visible')
+          action = 'addClass'
+          text = 'Show timetable'
+        else
+          action = 'removeClass'
+          text = 'Hide timetable'
+
+        $('#schedule')[action]('hidden')
+        $('#schedule-controls .title')[action]('hidden')
+        $('#schedule-controls #nearest-arrival.btn')[action]('hidden')
+        $('#toggle-timetable').text text
 
   # remove old vehicle markers
   remove_old_vehicle_markers = (expiry) ->
@@ -188,7 +211,7 @@ $(document).ready ->
 
   # show route colors on stop_times timetable/schedule
   colorize_timetable = () ->
-    $.each $('#schedule .route .color-box'), (i, el) ->
+    $.each $('.route .color-box'), (i, el) ->
       $(this).css 'background-color', route_colors[$(this).closest('.route').attr('id')]
 
   # setup map
@@ -207,6 +230,7 @@ $(document).ready ->
     L.mapbox.markerLayer(stop_geojson).addTo(map)
 
     $.get "#{stop.data('code')}/routes.json", (data) ->
+      window.routes = data
       L.geoJson(data,
         style: style_route_feature,
         onEachFeature: on_each_route_feature,
@@ -221,8 +245,5 @@ $(document).ready ->
 
   setup_map()
   get_schedule service_id
-
-  $('#nearest-arrival').on 'click', (e) ->
-    scroll_to_nearest_times moment().unix()
 
   true

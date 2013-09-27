@@ -8,14 +8,20 @@
         = @stop.stop_name
 
   .row
-    #map
+    #next-arrivals.col-md-5.hidden-sm.hidden-xs{ :"data-service-id" => "#{@trip_day}", :"data-day" => "#{Date.current.in_time_zone.to_i}" }
+      Loading schedule for #{Date.current.strftime "%m/%d/%Y"}...
+    #map.col-md-7.col-sm-12.col-xs-12
 
-  %h3
-    = "Arrival Times for #{Date.current.in_time_zone.strftime '%m/%d/%y'}"
-    .pull-right.hidden-xs
-      %button.btn.btn-primary#nearest-arrival Show upcoming arrivals
-
+  #schedule-controls
+    %h3 
+      %span.title.hidden
+        Timetable
+      %span.pull-right
+        %button#toggle-timetable.btn.btn-primary.hidden
+          Show timetable
+        %button#nearest-arrival.btn.hidden
+          Jump to upcoming arrivals
+          
   #schedule.row{ :"data-service-id" => "#{@trip_day}", :"data-day" => "#{Date.current.in_time_zone.to_i}" }
-    Loading schedule for #{Date.current.strftime "%m/%d/%Y"}...
 
   = javascript_include_tag 'stops'
