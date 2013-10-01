@@ -1,7 +1,9 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-require 'yaml'
+require 'json'
+
+PACKER_AWS_CONFIG = JSON.parse(File.read('ops/app_image.json'))['builders'].select { |b| b['type'] == 'amazon-ebs' }.first
 
 Vagrant.configure('2') do |config|
   config.vm.define "local" do |local|
@@ -12,37 +14,38 @@ Vagrant.configure('2') do |config|
     local.vm.network :forwarded_port, guest: 3000, host: 3000
     local.vm.network :forwarded_port, guest: 5001, host: 5001 
     local.vm.network :forwarded_port, guest: 6379, host: 6379
+
+    local.vm.provision :shell, path: 'ops/bootstrap_puppet.sh'
+    local.vm.provision :puppet do |puppet|
+      puppet.manifests_path   = 'ops/puppet/manifests'
+      puppet.module_path      = 'ops/puppet/modules'
+      puppet.manifest_file    = 'default.pp'
+      puppet.options          = '--verbose'
+    end
   end
 
-  if File.exists? 'config/vagrant/aws.yml'
-    CONFIG = YAML.load File.read('config/vagrant/aws.yml')
-    config.vm.define "aws" do |aws|
-      aws.vm.box      = 'dummy'
-      aws.vm.box_url  = 'https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box'
 
-      aws.vm.provider :aws do |aws, override|
-        apply_settings aws, CONFIG['aws']
+  config.vm.define "aws2" do |aws|
+    aws.vm.box      = 'dummy'
+    aws.vm.box_url  = 'https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box'
+    aws.vm.provider :aws do |aws, override|
+      aws.access_key_id = PACKER_AWS_CONFIG['access_key']
+      aws.secret_access_key = PACKER_AWS_CONFIG['secret_key']
 
-        CONFIG['aws']['override'].keys.each do |k|
-          apply_settings override.send(k), CONFIG['aws']['override'][k]
-        end
-        
-      end
-    end
+      aws.ami = 'ami-1d633474' # packer artifact
+      aws.instance_type = PACKER_AWS_CONFIG['instance_type']
+      aws.region = PACKER_AWS_CONFIG['region']
 
-    config.vm.define "aws-32" do |aws|
-      aws.vm.box      = 'dummy'
-      aws.vm.box_url  = 'https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box'
+      aws.security_groups = ['node', 'web', 'ssh', 'redis']
+      aws.keypair_name = 'ride-ontime.com'
 
-      aws.vm.provider :aws do |aws, override|
-        apply_settings aws, CONFIG['aws']
-        aws.ami = 'ami-e1ade488'
+      aws.tags = {
+        :name => 'gtfsr'
+      }
 
-        CONFIG['aws']['override'].keys.each do |k|
-          apply_settings override.send(k), CONFIG['aws']['override'][k]
-        end
-        
-      end
+      override.vm.synced_folder ".", "/vagrant", disabled: true
+      override.ssh.username = 'ubuntu'
+      override.ssh.private_key_path = '/Users/myeh/proj/ec2_keypairs/rideon/ride-ontime.com/ride-ontime.com.pem'
     end
   end
 
@@ -51,20 +54,5 @@ Vagrant.configure('2') do |config|
     # http://github.com/rubygems/rubygems/issues/513#issuecomment-24156984
     vb.customize ['modifyvm', :id, '--natdnsproxy1', 'off'] 
     vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'off']
-  end
-
-  config.vm.provision :shell, path: 'config/vagrant/bootstrap_puppet.sh'
-  config.vm.provision :puppet do |puppet|
-    puppet.manifests_path   = 'puppet/manifests'
-    puppet.module_path      = 'puppet/modules'
-    puppet.manifest_file    = 'default.pp'
-    puppet.options          = '--verbose'
-  end
-end
-
-def apply_settings(obj, settings)
-  settings.each do |key, value|
-    msg = "#{key}="
-    obj.send(msg, value) if obj.respond_to?(msg)
   end
 end

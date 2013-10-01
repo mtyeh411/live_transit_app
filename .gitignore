@@ -26,10 +26,10 @@
 .powrc
 
 # Ignore custom configs
-config/vagrant/*.yml
 config/schedule.rb
 config/initializers/geokit_config.rb
 config/database.yml
+ops/app_image.json
 
 # Ignore vagrant machines
 .vagrant

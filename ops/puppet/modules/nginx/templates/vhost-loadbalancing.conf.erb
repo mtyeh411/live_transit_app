@@ -1,0 +1,53 @@
+
+upstream workers {
+<% @workers.each do |worker| -%>
+  server <%= worker %> max_fails=<%= @max_fails %> fail_timeout=<%= @fail_timeout %>s;
+<% end -%>
+<% unless @backups.empty? -%>
+  # Use backups in the case a main server fails
+<% @workers.each do |worker| -%>
+  server <%= worker %> max_fails=<%= @max_fails %> fail_timeout=<%= @fail_timeout %>s backup;
+<% end -%>
+<% end -%>
+}
+
+<% unless @caches.nil? or @caches.empty? -%>
+# Hack to add in additonal upstream for caching 
+upstream vcache_workers {
+<% @caches.each do |cache| -%>
+  server <%= cache %>;
+<% end -%>
+}
+<% end -%>
+
+server {
+<%= scope.function_template(['nginx/vhost/_listen.conf.erb']) %>
+  # Define empty root dir for LB
+  root /usr/share/empty;
+  <% unless @locations.nil? or @locations.empty? -%>
+  
+  # Add placeholder for additional nginx locations 
+  <%= locations %>
+
+<% end -%>
+  location / {
+    proxy_pass <%= @proto %>://workers;
+    proxy_redirect        off;
+    proxy_next_upstream   error timeout invalid_header http_500 http_502 http_503 http_504;
+    proxy_connect_timeout 20;
+    proxy_set_header      Host            $host;
+    proxy_set_header      X-Real-IP       $remote_addr;
+    proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header      X-Client-Verify $ssl_client_verify;
+    proxy_set_header      X-Client-DN     $ssl_client_s_dn;
+    proxy_set_header      X-SSL-Subject   $ssl_client_s_dn;
+    proxy_set_header      X-SSL-Issuer    $ssl_client_i_dn;
+    client_max_body_size  10m;
+  }
+
+<% unless @magic.nil? or @magic.empty? -%>
+  # Add in any addition template data. This is entirely arbitrary, so in the
+  # words of Ben, this could be quite "jazzy"
+  <%= magic %>
+<% end -%>
+}

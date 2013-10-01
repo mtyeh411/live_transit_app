@@ -1,12 +1,21 @@
-$ruby_version = '2.0.0-p247'
+$deploy_path  = "/var/www"
 $project      = 'gtfs_realtime_viz'
 
-$bash         = 'sudo -H bash -l -c'
+$ruby_version = '2.0.0-p247'
 $rvm          = '/usr/local/rvm'
 $with_gemset  = "${rvm}/bin/rvm ${ruby_version}@${project} do"
 
+$bash         = 'sudo -H bash -l -c'
+
 Exec {
   path => ['/usr/sbin', '/usr/bin', '/sbin', '/bin']
+}
+
+file { $deploy_path:
+  ensure  => "directory",
+  owner   => root,
+  group   => root,
+  mode    => 775
 }
 
 # --- Datastores ---
@@ -38,52 +47,38 @@ rvm_gem { "ruby-${ruby_version}@${project}/bundler":
   require => Rvm_gemset["ruby-${ruby_version}@${project}"]
 }
 
-include stdlib
 file_line { 'trust_all_rvmrcs':
   path    => "/etc/rvmrc",
   line    => 'rvm_trust_rvmrcs_flag=1',
   match   => '^rvm_trust_rvmrcs_flag=',
   require => File['/etc/rvmrc']
 }
+
 file { '/etc/rvmrc':
   ensure  => file
 }
 
-# --- Application configs and installs ---
-exec { 'install_gems':
- command  => "${with_gemset} bundle install",
- cwd      => '/vagrant',
- require  => Rvm_gem["ruby-${ruby_version}@${project}/bundler"]
+# -- Application server --
+class { 'nginx': }
+
+package { 'ssl-cert':
+  ensure  => 'installed'
 }
 
-exec { 'update_cron':
-  command   => "${bash} '${with_gemset} bundle exec whenever -i'",
-  cwd       => '/vagrant',
-  logoutput => true,
-  require   => Exec['install_gems']
+nginx::unicorn { $project: 
+  unicorn_socket  => "/var/run/${project}.sock",
+  isdefaultvhost  => true
 }
 
-exec { 'export_foreman':
-  command  => "${bash} '${with_gemset} rvmsudo foreman export upstart /etc/init -a ${project} -u root'",
-  cwd      => '/vagrant',
-  creates  => "/etc/init/${project}.conf",
-  require  => Exec['update_cron']
-}
-
-# --- Application service monitoring ---
-file { "/etc/init/${project}.conf":
-  ensure  => file,
-  require => Exec['export_foreman'],
-  notify  => Service["${project}"]
-}
-
-service { $project:
-  ensure    => running,
-  provider  => 'upstart'
-}
-
-# --- Logfile management ---
+# -- Logfile management --
 class { 'logrotate': }
+
+file { "/var/log/${project}":
+  ensure  => "directory",
+  owner   => "root",
+  group   => "root",
+  mode    => 644
+}
 
 logrotate::rule { $project:
   path          => "/var/log/${project}/*.log",
@@ -96,6 +91,7 @@ logrotate::rule { $project:
   shred         => true,
   compress      => true,
   ifempty       => false,
+  require       => File["/var/log/${project}"]
 }
 
 cron { 'logrotate':
@@ -103,4 +99,16 @@ cron { 'logrotate':
   command => '/usr/sbin/logrotate',
   user    => root,
   minute  => '*/5',
+}
+
+# -- Capistrano file directory --
+file {
+  [ "${deploy_path}/${project}",
+    "${deploy_path}/${project}/shared",
+    "${deploy_path}/${project}/shared/config",
+  ]:
+  ensure  => "directory",
+  owner   => root,
+  group   => root,
+  mode    => 775
 }

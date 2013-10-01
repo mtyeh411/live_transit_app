@@ -27,6 +27,7 @@ end
 
 group :development do
   gem 'puppet'
+  gem 'capistrano'
   gem 'debugger'
 end
 
@@ -84,8 +85,5 @@ end
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
 # Use unicorn as the app server
-# gem 'unicorn'
-
-# Use Capistrano for deployment
-# gem 'capistrano', group: :development
+gem 'unicorn-rails'
 

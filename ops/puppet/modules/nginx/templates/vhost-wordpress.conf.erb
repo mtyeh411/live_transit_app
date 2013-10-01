@@ -1,0 +1,90 @@
+# This vhost is managed by puppet, do not mess with it, terrible terrible things
+# will happen.
+#
+#
+# May be lifted from http://unicorn.bogomips.org/examples/nginx.conf
+
+# this can be any application server, not just Unicorn/Rainbows!
+
+server {
+
+<%= scope.function_template(['nginx/vhost/_servername.conf.erb']) %>
+
+<%= scope.function_template(['nginx/vhost/_listen.conf.erb']) %>
+
+  index index.php index.html;
+
+  root <%= rootpath %>;
+
+  # Deny all attempts to access hidden files such as .htaccess, .htpasswd, .DS_Store (Mac).
+  # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban)
+  location ~ /\. {
+    deny all;
+  }
+
+  location ~ /\..*/.* {
+    deny all;
+  }
+
+  # Deny access to any files with a .php extension in the uploads directory
+  # Works in sub-directory installs and also in multisite network
+  # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban)
+  location ~* /(?:uploads|files)/.*\.php$ {
+    deny all;
+  }
+
+  location / {
+    try_files $uri $uri/ /index.php?$args;
+  }
+
+  location ~ .*\.php$
+  { 
+    #This next line fixes possible security issues, requires that the fpm is on the same server. http://library.linode.com/web-servers/nginx/php-fastcgi/debian-6-squeeze#sph_important-security-considerations
+    try_files $uri =404;
+
+    include <%= scope.lookupvar('nginx::params::fastcgi_params') %>;
+    fastcgi_pass <%= fpm_upstream %>;
+    fastcgi_index index.php;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_pass_header Host;
+    fastcgi_pass_header X-Real-IP;
+    fastcgi_pass_header X-Forwarded-For;
+  }
+
+  access_log  /var/log/nginx/<%= srvname %>.access.log;
+  error_log   /var/log/nginx/<%= srvname %>.error.log;
+
+
+  # tcp_nopush on; # off may be better for *some* Comet/long-poll stuff
+  # tcp_nodelay off; # on may be better for some Comet/long-poll stuff
+
+  # we haven't checked to see if Rack::Deflate on the app server is
+  # faster or not than doing compression via nginx.  It's easier
+  # to configure it all in one place here for static files and also
+  # to disable gzip for clients who don't get gzip/deflate right.
+  # There are other other gzip settings that may be needed used to deal with
+  # bad clients out there, see http://wiki.nginx.org/NginxHttpGzipModule
+  gzip on;
+  gzip_http_version 1.0;
+  gzip_proxied any;
+  gzip_min_length 500;
+  gzip_disable "MSIE [1-6]\.";
+  gzip_types text/plain text/xml text/css
+             text/comma-separated-values
+             text/javascript application/x-javascript
+             application/atom+xml;
+
+
+  client_max_body_size 128m;
+
+<% unless aliases.empty? -%>
+  # equivilent of Alias /foo /bar/plop in apache
+<%   aliases.each do |a,path| -%>
+  location <%= a %> { root <%= path %>; }
+<%   end -%>
+<% end -%>
+
+  # Anything here is added by use of "magic" so is pretty jazzy.
+  <%= magic %>
+}
+

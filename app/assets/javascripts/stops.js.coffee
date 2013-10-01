@@ -221,7 +221,7 @@ $(document).ready ->
       properties:
         title: "Stop #{stop.data('id')}",
         "marker-size": "large",
-        "marker-color": "#000",
+        "marker-color": "#555",
         "marker-symbol": "bus"
       geometry:
         type: "Point",

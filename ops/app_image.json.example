@@ -1,0 +1,24 @@
+{
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "YOUR_ACCESS_KEY",
+    "secret_key": "YOUR_SECRET_KEY",
+    "region": "us-east-1",
+    "source_ami": "ami-53b1ff3a", 
+    "instance_type": "m1.large",
+    "ssh_username": "ubuntu",
+    "ami_name": "gtfs_realtime_viz_{{timestamp}}",
+    "tags": {
+      "Name": "gtfsr-image"
+    }
+  }],
+
+  "provisioners": [{
+    "type": "shell",
+    "script": "ops/bootstrap_puppet.sh"
+  }, {
+    "type": "puppet-masterless",
+    "manifest_file": "ops/puppet/manifests/default.pp",
+    "module_paths": ["ops/puppet/modules"]
+  }]
+}
