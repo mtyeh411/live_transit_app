@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'geokit-rails'
+gem 'foreman'
 
 # Use for GTFS-R fetching/parsing
 gem 'ruby-protocol-buffers'
@@ -25,7 +26,6 @@ end
 
 group :development do
   gem 'debugger'
-  gem 'foreman'
   gem 'puppet'
   gem 'capistrano'
   gem 'rvm-capistrano', :require => false
