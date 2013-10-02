@@ -69,8 +69,17 @@ package { 'ssl-cert':
 }
 
 nginx::unicorn { $project: 
-  unicorn_socket  => "/var/www/${project}/current/tmp/unicorn.sock",
-  isdefaultvhost  => true
+  unicorn_socket  => "${deploy_path}/${project}/current/tmp/unicorn.sock",
+  isdefaultvhost  => true,
+  magic           => "
+    location ~ ^/assets/ {
+      root ${deploy_path}/${project}/current/public;
+      add_header Last-Modified "";
+      add_header ETag "";
+      gzip_static on;
+      expires max;
+      add_header Cache-Control public;
+    }"
 }
 
 # -- Logfile management --
