@@ -1,7 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'foreman'
-
 gem 'geokit-rails'
 
 # Use for GTFS-R fetching/parsing
@@ -26,9 +24,12 @@ group :production do
 end
 
 group :development do
+  gem 'debugger'
+  gem 'foreman'
   gem 'puppet'
   gem 'capistrano'
-  gem 'debugger'
+  gem 'rvm-capistrano', :require => false
+  gem 'capistrano-foreman', :require => false
 end
 
 group :test do

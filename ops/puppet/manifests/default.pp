@@ -13,8 +13,8 @@ Exec {
 
 file { $deploy_path:
   ensure  => "directory",
-  owner   => root,
-  group   => root,
+  owner   => 'www-data',
+  group   => 'www-data',
   mode    => 775
 }
 
@@ -26,6 +26,9 @@ class { 'redis': }
 
 # --- Node ---
 package { 'nodejs':
+  ensure => installed
+}
+package { 'npm':
   ensure => installed
 }
 
@@ -66,32 +69,25 @@ package { 'ssl-cert':
 }
 
 nginx::unicorn { $project: 
-  unicorn_socket  => "/var/run/${project}.sock",
+  unicorn_socket  => "/var/www/${project}/current/tmp/unicorn.sock",
   isdefaultvhost  => true
 }
 
 # -- Logfile management --
 class { 'logrotate': }
 
-file { "/var/log/${project}":
-  ensure  => "directory",
-  owner   => "root",
-  group   => "root",
-  mode    => 644
-}
-
 logrotate::rule { $project:
-  path          => "/var/log/${project}/*.log",
+  path          => "${deploy_path}/${project}/shared/log/*.log",
   rotate        => 3,
   size          => '100k',
   create        => true,
   create_mode   => 0600,
-  create_owner  => root,
-  create_group  => root,
+  create_owner  => 'deployer',
+  create_group  => 'www-data',
   shred         => true,
   compress      => true,
   ifempty       => false,
-  require       => File["/var/log/${project}"]
+  require       => File["${deploy_path}/${project}/shared/log"]
 }
 
 cron { 'logrotate':
@@ -102,13 +98,32 @@ cron { 'logrotate':
 }
 
 # -- Capistrano file directory --
+group { 'deployers':
+  ensure  => present
+}
+
+user { 'ubuntu':
+  ensure  => present,
+  group   => 'deployers',
+  require => Group['deployers']
+}
+
+user { 'www-data':
+  ensure  => present,
+  group   => 'deployers',
+  require => Class['nginx']
+}
+
 file {
   [ "${deploy_path}/${project}",
     "${deploy_path}/${project}/shared",
     "${deploy_path}/${project}/shared/config",
+    "${deploy_path}/${project}/shared/pids",
+    "${deploy_path}/${project}/shared/log",
   ]:
   ensure  => "directory",
-  owner   => root,
-  group   => root,
-  mode    => 775
+  owner   => 'ubuntu',
+  group   => 'deployers',
+  mode    => 774,
+  require => User['ubuntu']
 }
