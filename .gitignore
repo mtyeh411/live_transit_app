@@ -27,7 +27,6 @@
 
 # Ignore custom configs
 config/schedule.rb
-config/initializers/geokit_config.rb
 config/database.yml
 ops/app_image.json
 

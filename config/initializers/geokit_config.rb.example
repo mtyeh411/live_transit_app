@@ -1,2 +1,0 @@
-GeoKit::Geocoders::provider_order = [:us]
-GeoKit::Geocoders::geocoder_us = false
