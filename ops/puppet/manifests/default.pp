@@ -74,8 +74,8 @@ nginx::unicorn { $project:
   magic           => "
     location ~ ^/assets/ {
       root ${deploy_path}/${project}/current/public;
-      add_header Last-Modified "";
-      add_header ETag "";
+      add_header Last-Modified '';
+      add_header ETag '';
       gzip_static on;
       expires max;
       add_header Cache-Control public;
@@ -112,14 +112,16 @@ group { 'deployers':
 }
 
 user { 'ubuntu':
-  ensure  => present,
-  group   => 'deployers',
-  require => Group['deployers']
+  ensure      => present,
+  groups      => ['deployers'],
+  membership  => 'minimum',
+  require     => Group['deployers']
 }
 
 user { 'www-data':
   ensure  => present,
-  group   => 'deployers',
+  groups      => ['deployers'],
+  membership  => 'minimum',
   require => Class['nginx']
 }
 

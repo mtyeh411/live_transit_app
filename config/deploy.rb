@@ -9,7 +9,7 @@ set :keep_releases, 2
 set :rails_env, 'production'
 
 # Replace below with info relevant to your server
-server "107.20.200.72", :web, :app, :primary => true
+server "50.19.224.217", :web, :app, :primary => true
 ssh_options[:keys] = "~/proj/ec2_keypairs/rideon/ride-ontime.com/ride-ontime.com.pem"
 
 require 'bundler/capistrano' 
@@ -28,8 +28,8 @@ set :foreman_options, {
   log: "#{shared_path}/log",
 }
 
-set :whenever_command, "bundle exec whenever"
-require 'whenever/capistrano'
+set :whenever_command, "rvmsudo bundle exec whenever"
+#require 'whenever/capistrano'
 
 namespace :deploy do
   task :start do ; end
@@ -38,14 +38,23 @@ namespace :deploy do
   task :restart, :roles => :app, :except => { :no_release => true } do
     run "#{try_sudo} start #{application} || #{try_sudo} restart #{application}"
   end
+end
 
+namespace :dbyml do
   desc "symlink database.yml from shared"
-  task :database_yml, :roles => :app do
+  task :symlink, :roles => :app do
     run "ln -s #{shared_path}/config/database.yml #{latest_release}/config/database.yml"
   end
 
-  desc "install node dependencies"
-  task :npm_install, :roles => :app do
+  desc "upload to shared"
+  task :upload, :roles => :app do
+    top.upload("config/database.yml", "#{shared_path}/config/database.yml")
+  end
+end
+
+namespace :node do
+  desc "install dependencies"
+  task :deps do
     run "cd #{latest_release}/node && #{try_sudo} npm install"
   end
 end
@@ -74,12 +83,27 @@ namespace :redis do
   end
 end
 
-before "deploy:assets:precompile", "deploy:database_yml"
-before "deploy:create_symlink", "deploy:npm_install"
+namespace :whenever do
+  desc "update cron via whenever"
+  task :update do
+    run "cd #{latest_release} && #{whenever_command} -i"
+  end
+
+  desc "remove cron via whenever"
+  task :remove do
+    run "cd #{latest_release} && #{whenever_command} -c"
+  end
+end
+
+before "deploy:cold", "dbyml:upload"
+
+before "deploy:assets:precompile", "dbyml:symlink"
+
+before "deploy:create_symlink", "node:deps"
 
 after "deploy:update", "foreman:export"
 after "deploy:update", "foreman:restart"
-after "deploy:update", "whenever:add"
+after "deploy:update", "whenever:update"
 
 after "deploy:restart", "nginx:restart"
 after "deploy:restart", "redis:restart"
