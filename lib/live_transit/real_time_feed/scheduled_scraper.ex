@@ -6,6 +6,7 @@ defmodule LiveTransit.RealTimeFeed.ScheduledScraper do
   end
 
   def init(state) do
+    IO.inspect state, label: "init state"
     schedule_next_scrape(state.interval)
     {:ok, state}
   end

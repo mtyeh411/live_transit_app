@@ -15,7 +15,8 @@ defmodule LiveTransit.Application do
       # Start your own worker by calling: LiveTransit.Worker.start_link(arg1, arg2, arg3)
       # worker(LiveTransit.Worker, [arg1, arg2, arg3]),
       worker(LiveTransit.RealTimeFeed.ScheduledScraper, [%{
-               interval: 15 * 1000
+               interval: 45 * 1000,
+               realtime_feed_url: Application.get_env(:live_transit, LiveTransit.RealTimeFeed)[:realtime_feed_url]
              }])
     ]
 

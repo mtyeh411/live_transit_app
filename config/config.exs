@@ -17,6 +17,10 @@ config :live_transit, LiveTransitWeb.Endpoint,
   pubsub: [name: LiveTransit.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
+# Configures scrapable feed
+config :live_transit, LiveTransit.RealTimeFeed,
+  realtime_feed_url: System.get_env("LIVE_TRANSIT_REALTIME_FEED_URL")
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
