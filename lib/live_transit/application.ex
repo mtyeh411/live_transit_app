@@ -14,9 +14,9 @@ defmodule LiveTransit.Application do
       supervisor(LiveTransitWeb.Endpoint, []),
       # Start your own worker by calling: LiveTransit.Worker.start_link(arg1, arg2, arg3)
       # worker(LiveTransit.Worker, [arg1, arg2, arg3]),
-      worker(LiveTransit.RealTimeFeed.ScheduledScraper, [%{
+      worker(GtfsRealtime.Scheduler, [%{
                interval: 45 * 1000,
-               realtime_feed_url: Application.get_env(:live_transit, LiveTransit.RealTimeFeed)[:realtime_feed_url]
+               url: Application.get_env(:live_transit, GtfsRealtime)[:url]
              }])
     ]
 

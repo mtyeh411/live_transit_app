@@ -1,6 +1,6 @@
-defmodule LiveTransit.RealTimeFeed.Scraper do
+defmodule GtfsRealtime.Ingestor do
 
-  def scrape(url) do
+  def ingest(url) do
     case HTTPoison.get(url) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         IO.inspect url, label: "Successfully fetched feed"

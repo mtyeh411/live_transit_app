@@ -1,50 +1,50 @@
-defmodule LiveTransit.RealTimeFeed.ScheduledScraper do
+defmodule GtfsRealtime.Scheduler do
   use GenServer
 
   def start_link(init_state) do
-    GenServer.start_link(__MODULE__, Map.put(init_state, :attempts, []), name: :scraper)
+    GenServer.start_link(__MODULE__, Map.put(init_state, :attempts, []), name: :scheduler)
   end
 
   def init(state) do
     IO.inspect state, label: "init state"
-    schedule_next_scrape(state.interval)
+    schedule_ingestion(state.interval)
     {:ok, state}
   end
 
   ##
   # public interface
   ##
-  def get_state do
-    GenServer.call(:scraper, :get_state)
+  def inspect do
+    GenServer.call(:scheduler, :inspect)
   end
 
-  def scrape do
-    GenServer.cast(:scraper, :scrape)
+  def ingest do
+    GenServer.cast(:scheduler, :ingest)
   end
 
   ##
   # GenServer handlers
   ##
-  def handle_call(:get_state, _from, state) do
+  def handle_call(:inspect, _from, state) do
     {:reply, state, state}
   end
 
-  def handle_cast(:scrape, state) do
+  def handle_cast(:ingest, state) do
     {:noreply, %{state | attempts: track_attempt(state.attempts)}}
   end
 
-  def handle_info(:schedule_scrape, state) do
+  def handle_info(:schedule_ingestion, state) do
     # TODO do the thang
     timestamp = DateTime.utc_now
-    schedule_next_scrape(state.interval)
+    schedule_ingestion(state.interval)
     {:noreply, %{state | attempts: track_attempt(state.attempts, timestamp)}}
   end
 
   ###
   # private functions
   ###
-  defp schedule_next_scrape(interval \\ 30*1000) do
-    Process.send_after(self(), :schedule_scrape, interval)
+  defp schedule_ingestion(interval \\ 30*1000) do
+    Process.send_after(self(), :schedule_ingestion, interval)
   end
 
   defp track_attempt(attempts, timestamp \\ DateTime.utc_now) do
