@@ -1,12 +1,11 @@
 defmodule GtfsRealtime.Ingestor do
 
-  def ingest(url) do
+  def ingest(url, last_ingested_at \\ DateTime.to_unix(DateTime.utc_now())-60) do
     case HTTPoison.get(url) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         IO.inspect url, label: "Successfully fetched feed"
         GtfsRealtime.FeedMessage.decode(body)
-        |> processable?
-        |> store_feed_timestamp
+        |> processable?(last_ingested_at)
         |> process_entity
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         IO.inspect url, label: "Feed not found"
@@ -15,17 +14,18 @@ defmodule GtfsRealtime.Ingestor do
     end
   end
 
-  defp processable?(feed) do
-    # TODO is more recent than the last processed feed?
-    {:ok, feed}
-  end
-
-  defp store_feed_timestamp({:ok, feed}) do
-    # TODO
-    {:ok, feed}
+  defp processable?(feed, last_ingested_at) do
+    if feed.header.timestamp > last_ingested_at do
+      {:ok, feed}
+    else
+      {:error, 'Current feed is older than previous feed.'}
+    end
   end
 
   #defp process_entity({:ok, %GtfsRealtime.FeedMessage{entity: entity}}) when is_list(entity) and Enum.any?(entity) do
+  defp process_entity({:error, message}) do
+    IO.puts "Error: #{message}"
+  end
   defp process_entity({:ok, feed}) do
     {:ok, Enum.map(feed.entity, &serialize_entity/1) }
   end

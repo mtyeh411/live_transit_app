@@ -34,7 +34,8 @@ defmodule GtfsRealtime.Scheduler do
   end
 
   def handle_info(:schedule_ingestion, state) do
-    # TODO do the thang
+    # TODO ingest url, state.last_ingested_at
+    # TODO set state.last_ingested_at from feed.header.timestamp
     timestamp = DateTime.utc_now
     schedule_ingestion(state.interval)
     {:noreply, %{state | attempts: track_attempt(state.attempts, timestamp)}}
