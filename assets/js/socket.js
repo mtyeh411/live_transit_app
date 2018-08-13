@@ -62,12 +62,8 @@ channel.join()
   .receive("error", resp => { console.log("Unable to join", resp) })
 
 channel.on("new_update", payload => {
-  let timestamp = Date()
   let updateElement = document.createElement("div")
-
-  console.info(timestamp)
-
-  updateElement.innerText = `[${timestamp}] ${payload.body}`
+  updateElement.innerText = `[${Date(payload.body.timestamp)}] ${payload.body.updates}`
   updateElement.className = "row"
   contentContainer.replaceChild(updateElement, contentContainer.childNodes[0])
 })
