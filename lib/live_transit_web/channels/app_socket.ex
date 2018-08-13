@@ -1,8 +1,8 @@
-defmodule LiveTransitWeb.UserSocket do
+defmodule LiveTransitWeb.AppSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", LiveTransitWeb.RoomChannel
+  channel "gtfsr:updates", LiveTransitWeb.GtfsRealtimeChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

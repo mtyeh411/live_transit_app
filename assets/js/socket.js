@@ -54,9 +54,22 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 socket.connect()
 
 // Now that you are connected, you can join channels with a topic:
-let channel = socket.channel("topic:subtopic", {})
+let channel = socket.channel("gtfsr:updates", {})
+let contentContainer = document.querySelector("#content")
+
 channel.join()
   .receive("ok", resp => { console.log("Joined successfully", resp) })
   .receive("error", resp => { console.log("Unable to join", resp) })
+
+channel.on("new_update", payload => {
+  let timestamp = Date()
+  let updateElement = document.createElement("div")
+
+  console.info(timestamp)
+
+  updateElement.innerText = `[${timestamp}] ${payload.body}`
+  updateElement.className = "row"
+  contentContainer.replaceChild(updateElement, contentContainer.childNodes[0])
+})
 
 export default socket

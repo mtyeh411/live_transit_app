@@ -1,7 +1,7 @@
 defmodule LiveTransitWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :live_transit
 
-  socket "/socket", LiveTransitWeb.UserSocket
+  socket "/socket", LiveTransitWeb.AppSocket
 
   # Serve at "/" the static files from "priv/static" directory.
   #
