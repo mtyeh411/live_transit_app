@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { gtfsr_channel } from '../socket'
 
+import UpdateStatusBar from './UpdateStatusBar'
+import VehicleUpdates from './VehicleUpdates'
+
 export default class AppContainer extends Component {
 
   constructor() {
@@ -28,10 +31,17 @@ export default class AppContainer extends Component {
   }
 
   render() {
-    let { timestamp, updates } = this.state
+    let { timestamp, connected } = this.state
+    let { vehicle: vehicle_updates, trip: trip_updates } = this.state.updates
+
     return (
       <div>
-        {timestamp && Date(timestamp)} {updates}
+        <div className='row'>
+          <UpdateStatusBar timestamp={timestamp} connected={connected} />
+        </div>
+        <div className='row'>
+          <VehicleUpdates updates={vehicle_updates} />
+        </div>
       </div>
     )
   }
